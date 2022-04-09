@@ -1,38 +1,97 @@
 import './style.css';
 
 import * as THREE from 'three';
-
+//Scene
 const scene = new THREE.Scene();
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-const renderer = new THREE.WebGLRenderer({canvas: document.querySelector('#bg')});
+//Objects
+const geometry = new THREE.SphereGeometry(5);
+const geometry1 = new THREE.SphereGeometry(1);
 
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth , window.innerHeight);
-camera.position.setZ(30);
+
+//Materials
+const material = new THREE.MeshStandardMaterial({
+  color: 0xff6347
+});
+
+const material2 = new THREE.MeshStandardMaterial({
+  color: 0xff6347
+});
+
+//Meshs
+//Mesh1
+const earth = new THREE.Mesh(geometry, material);
+scene.add(earth);
+earth.position.set(0, 0, 0);
+
+//Mesh2
+const moon = new THREE.Mesh(geometry1, material2);
+moon.position.set(0, 7, 0);
+scene.add(moon);
+
+/**Sizes
+ * 
+ */
+const sizes = {
+  width: window.innerWidth,
+  height: window.innerHeight
+}
+
+window.addEventListener('resize', () => {
+  // Update sizes
+  sizes.width = window.innerWidth
+  sizes.height = window.innerHeight
+
+  // Update camera
+  camera.aspect = sizes.width / sizes.height
+  camera.updateProjectionMatrix()
+
+  // Update renderer
+  renderer.setSize(sizes.width, sizes.height)
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+})
+
+/**
+ * 
+ * Camera
+ */
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1000)
+camera.position.x = 0
+camera.position.y = 0
+// camera.position.setZ(20);
+camera.position.z = 20
+scene.add(camera)
+// const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+// scene.add(camera)
+
+
+/**
+ * Renderer
+ */
+const renderer = new THREE.WebGLRenderer({
+  canvas: document.querySelector('#bg')
+});
+
+renderer.setPixelRatio(window.devicePixelRatio, 2);
+renderer.setSize(window.innerWidth, window.innerHeight);
+
 
 renderer.render(scene, camera);
 
-const geometry = new THREE.SphereGeometry(5);
-const material = new THREE.MeshStandardMaterial({color: 0xff6347});
-const earth = new THREE.Mesh(geometry, material);
-scene.add(earth);
-earth.position.set(0,0,0);
+
+//Lights
 
 const pointLight = new THREE.PointLight(0xffffff);
 const ambientLight = new THREE.AmbientLight(0x444444);
-pointLight.position.set(5,5,5);
+pointLight.position.set(5, 5, 5);
 scene.add(ambientLight);
 scene.add(pointLight);
 
-  const geometry2 = new THREE.SphereGeometry(1);
-  const material2 = new THREE.MeshStandardMaterial({color: 0xff6347});
-  const moon = new THREE.Mesh(geometry2, material2);
-  moon.position.set(0,7,0);
-  scene.add(moon);
 
-let a,v=0,x,G,M,R;
+
+let a, v = 0,
+  x, G, M, R;
 
 // function getSlope(p1, p2){
 //   let d, dx, dy;
@@ -42,44 +101,49 @@ let a,v=0,x,G,M,R;
 // 	return [ dx / d, dy / d , 0];
 // }
 
-function Gravity(v){
-  let dest = getSlope(moon.position, new THREE.Vector3(0,0,0));
-  if (!(Math.sqrt(Math.pow(moon.position.y + v*dest[1], 2) + Math.pow(moon.position.x + v*dest[0], 2)) < 6)){
-  moon.position.x += v*dest[0];
-  moon.position.y += v*dest[1];
-  moon.position.z += v*dest[2];
-	}
+function Gravity(v) {
+  let dest = getSlope(moon.position, new THREE.Vector3(0, 0, 0));
+  if (!(Math.sqrt(Math.pow(moon.position.y + v * dest[1], 2) + Math.pow(moon.position.x + v * dest[0], 2)) < 6)) {
+    moon.position.x += v * dest[0];
+    moon.position.y += v * dest[1];
+    moon.position.z += v * dest[2];
+  }
 }
 
-function moonMove(v){
-  let dest = getSlope(moon.position, new THREE.Vector3(0,0,0));
-  if (!(Math.sqrt(Math.pow(moon.position.y + v*dest[1], 2) + Math.pow(moon.position.x + v*dest[0], 2)) < 6)){
-  moon.position.x += v*dest[1];
-  moon.position.y += -v*dest[0];
-  moon.position.z += v*dest[2];
-	}
+function moonMove(v) {
+  let dest = getSlope(moon.position, new THREE.Vector3(0, 0, 0));
+  if (!(Math.sqrt(Math.pow(moon.position.y + v * dest[1], 2) + Math.pow(moon.position.x + v * dest[0], 2)) < 6)) {
+    moon.position.x += v * dest[1];
+    moon.position.y += -v * dest[0];
+    moon.position.z += v * dest[2];
+  }
 }
-function getSlope(p1, p2){
+
+function getSlope(p1, p2) {
   const dx = p2.x - p1.x;
   const dy = p2.y - p1.y;
 
   const d = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
-  return [ dx / d, dy / d , 0];
+  return [dx / d, dy / d, 0];
 }
 
-function animate(){
+function animate() {
   requestAnimationFrame(animate);
   G = 6.674e-11;
   M = 1e6;
-  a = G * M / Math.sqrt(Math.pow(moon.position.y,2)+Math.pow(moon.position.x,2));
+  a = G * M / Math.sqrt(Math.pow(moon.position.y, 2) + Math.pow(moon.position.x, 2));
   v += a;
   Gravity(v);
-  moonMove(25*v);
+  moonMove(25 * v);
 
 
   renderer.render(scene, camera);
 }
 
+
+/**
+ * Animate
+ */
 
 animate();
