@@ -1,6 +1,13 @@
 import './style.css';
+import * as THREE from 'three'
+import {
+  OrbitControls
+} from 'three/examples/jsm/controls/OrbitControls.js'
 
-import * as THREE from 'three';
+import * as dat from 'dat.gui'
+
+// //Debug
+const gui = new dat.GUI()
 //Scene
 const scene = new THREE.Scene();
 
@@ -89,7 +96,7 @@ scene.add(ambientLight);
 scene.add(pointLight);
 
 
-
+//phisic functions
 let a, v = 0,
   x, G, M, R;
 
