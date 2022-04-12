@@ -6,6 +6,18 @@ import {
 
 import * as dat from 'dat.gui'
 
+
+
+
+function createMoon(radius){
+      const geometry = new THREE.SphereGeometry(radius);
+      const material = new THREE.MeshStandardMaterial({color: 0xaaaaaa});
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(0, 0, 0);
+      scene.add(mesh);
+      return mesh;
+}
+
 // //Debug
 const gui = new dat.GUI()
 //Scene
@@ -14,7 +26,6 @@ const scene = new THREE.Scene();
 
 //Objects
 const geometry = new THREE.SphereGeometry(5);
-const geometry1 = new THREE.SphereGeometry(1);
 
 
 //Materials
@@ -22,24 +33,15 @@ const material = new THREE.MeshStandardMaterial({
   color: 0xff6347
 });
 
-const material2 = new THREE.MeshStandardMaterial({
-  color: 0xff6347
-});
 
-//Meshs
-//Mesh1
+
 const earth = new THREE.Mesh(geometry, material);
 scene.add(earth);
 earth.position.set(0, 0, 0);
+const moons = [createMoon(1),createMoon(1)];
+moons[0].position.set(0,10,0);
+moons[1].position.copy(new THREE.Vector3(2,2,0).add(moons[0].position));
 
-//Mesh2
-const moon = new THREE.Mesh(geometry1, material2);
-moon.position.set(0, 7, 0);
-scene.add(moon);
-
-/**Sizes
- * 
- */
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight
@@ -100,28 +102,16 @@ scene.add(pointLight);
 let a, v = 0,
   x, G, M, R;
 
-// function getSlope(p1, p2){
-//   let d, dx, dy;
-// 	d = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-// 	dx = p2.x - p1.x;
-// 	dy = p2.y - p1.y;
-// 	return [ dx / d, dy / d , 0];
-// }
 
-function Gravity(v) {
+function Gravity(moon) {
+  G = 6.674e-11;
+  M = 1e6 ;
+  a = G * M / Math.sqrt(Math.pow(moon.position.y, 2) + Math.pow(moon.position.x, 2) + Math.pow(moon.position.z, 2));
+  v += a;
   let dest = getSlope(moon.position, new THREE.Vector3(0, 0, 0));
-  if (!(Math.sqrt(Math.pow(moon.position.y + v * dest[1], 2) + Math.pow(moon.position.x + v * dest[0], 2)) < 6)) {
+  if (!(Math.sqrt(Math.pow(moon.position.y + v * dest[1], 2) + Math.pow(moon.position.x + v * dest[0], 2) + Math.pow(moon.position.z + v * dest[2], 2)) < 6)) {
     moon.position.x += v * dest[0];
     moon.position.y += v * dest[1];
-    moon.position.z += v * dest[2];
-  }
-}
-
-function moonMove(v) {
-  let dest = getSlope(moon.position, new THREE.Vector3(0, 0, 0));
-  if (!(Math.sqrt(Math.pow(moon.position.y + v * dest[1], 2) + Math.pow(moon.position.x + v * dest[0], 2)) < 6)) {
-    moon.position.x += v * dest[1];
-    moon.position.y += -v * dest[0];
     moon.position.z += v * dest[2];
   }
 }
@@ -129,22 +119,19 @@ function moonMove(v) {
 function getSlope(p1, p2) {
   const dx = p2.x - p1.x;
   const dy = p2.y - p1.y;
+  const dz = p2.z - p1.z;
 
-  const d = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+  const d = Math.sqrt(dx*dx + dy*dy + dz*dz);
 
-  return [dx / d, dy / d, 0];
+  return [dx / d, dy / d, dz / d];
 }
 
+const controls = new OrbitControls(camera, renderer.domElement);
 function animate() {
   requestAnimationFrame(animate);
-  G = 6.674e-11;
-  M = 1e6;
-  a = G * M / Math.sqrt(Math.pow(moon.position.y, 2) + Math.pow(moon.position.x, 2));
-  v += a;
-  Gravity(v);
-  moonMove(25 * v);
+  moons.forEach(Gravity);
 
-
+  controls.update();
   renderer.render(scene, camera);
 }
 
