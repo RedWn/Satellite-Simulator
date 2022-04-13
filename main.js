@@ -18,8 +18,25 @@ function createMoon(radius){
       return mesh;
 }
 
+//parameters
+const parameters = {
+  stop: false,
+}
+
 // //Debug
 const gui = new dat.GUI()
+
+let stop = false;
+gui.add(parameters, 'stop').onChange(function(value){
+  if(value){
+    stop=true;
+  } else {
+    stop=false;
+  }
+});
+
+
+
 //Scene
 const scene = new THREE.Scene();
 
@@ -39,8 +56,8 @@ const earth = new THREE.Mesh(geometry, material);
 scene.add(earth);
 earth.position.set(0, 0, 0);
 const moons = [createMoon(1),createMoon(1)];
-moons[0].position.set(0,10,0);
-moons[1].position.copy(new THREE.Vector3(2,2,0).add(moons[0].position));
+moons[0].position.set(0,10,5);
+moons[1].position.copy(new THREE.Vector3(2,2,-5).add(moons[0].position));
 
 const sizes = {
   width: window.innerWidth,
@@ -102,10 +119,10 @@ scene.add(pointLight);
 let a, v = 0,
   x, G, M, R;
 
+G = 6.674e-11;
+M = 1e6;
 
 function Gravity(moon) {
-  G = 6.674e-11;
-  M = 1e6 ;
   a = G * M / Math.sqrt(Math.pow(moon.position.y, 2) + Math.pow(moon.position.x, 2) + Math.pow(moon.position.z, 2));
   v += a;
   let dest = getSlope(moon.position, new THREE.Vector3(0, 0, 0));
@@ -115,6 +132,51 @@ function Gravity(moon) {
     moon.position.z += v * dest[2];
   }
 }
+
+function Gravity2(moon){
+  if(collision(moon.position))
+    return ;
+  let angles = getAngles(moon.position);
+
+  
+  let force = -1e4*G*M/Math.pow(getDistance(moon.position),2);
+
+  moon.position.x += force*Math.cos(angles[1])*Math.cos(angles[0]);
+  moon.position.y += force*Math.sin(angles[1])*Math.cos(angles[0]);
+  moon.position.z += force*Math.sin(angles[0]);
+  // let ac = force;
+  // if(moon.position.x >= 0)
+  //   return ac;
+  // else
+  //   return -ac;
+}
+
+function getDistance(pos){
+  return Math.sqrt(Math.pow(pos.x,2)+Math.pow(pos.y,2)+Math.pow(pos.z,2));
+}
+
+function collision(pos){
+  return getDistance(pos)<=6;
+}
+
+function getAngles(pos){
+  let gama = Math.asin(pos.z/getDistance(pos));
+  if (pos.x==0)
+    return [gama,Math.sign(pos.y)*Math.PI/2];
+  let theta = Math.atan(pos.y/pos.x);
+  if(pos.x < 0)
+    theta += Math.PI;
+  return [gama,theta];
+}
+
+//calculate the projection of the moon on the axises
+function getProjection(pos, axis){
+  let proj = new THREE.Vector3();
+  proj.copy(pos);
+  proj.projectOnVector(axis);
+  return proj;
+}
+
 
 function getSlope(p1, p2) {
   const dx = p2.x - p1.x;
@@ -127,17 +189,17 @@ function getSlope(p1, p2) {
 }
 
 const controls = new OrbitControls(camera, renderer.domElement);
-function animate() {
-  requestAnimationFrame(animate);
-  moons.forEach(Gravity);
-
-  controls.update();
-  renderer.render(scene, camera);
-}
-
 
 /**
  * Animate
  */
+function animate() {
+  requestAnimationFrame(animate);
+  if(!stop)
+    moons.forEach(Gravity2);
+
+  controls.update();
+  renderer.render(scene, camera);
+}
 
 animate();
