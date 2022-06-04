@@ -10,12 +10,12 @@ import { Vector3 } from 'three.js';
 
 
 
-function createMoon(radius){
-      const geometry = new THREE.SphereGeometry(radius);
-      const material = new THREE.MeshStandardMaterial({color: 0xaaaaaa});
-      const mesh = new THREE.Mesh(geometry, material);
-      scene.add(mesh);
-      return mesh;
+function createMoon(radius) {
+  const geometry = new THREE.SphereGeometry(radius);
+  const material = new THREE.MeshStandardMaterial({ color: 0xaaaaaa });
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+  return mesh;
 }
 
 // //Debug
@@ -25,16 +25,16 @@ const gui = new dat.GUI()
 const scene = new THREE.Scene();
 
 const geometry = new THREE.SphereGeometry(5);
-const material = new THREE.MeshStandardMaterial({color: 0x4763ff});
+const material = new THREE.MeshStandardMaterial({ color: 0x4763ff });
 const earth = new THREE.Mesh(geometry, material);
 scene.add(earth);
 earth.position.set(0, 0, 0);
 
-const moons = [createMoon(1),createMoon(1),createMoon(1)];
-moons[0].position.set(0,10,0);
-moons[1].position.copy(new THREE.Vector3(3,3,0).add(moons[0].position));
-moons[2].position.set(0,0,10);
-let testMoonDest = new THREE.Vector3(0,0,0);
+const moons = [createMoon(1), createMoon(1), createMoon(1)];
+moons[0].position.set(0, 10, 0);
+moons[1].position.copy(new THREE.Vector3(3, 3, 0).add(moons[0].position));
+moons[2].position.set(0, 0, 10);
+let testMoonDest = new THREE.Vector3(0, 0, 0);
 testMoonDest.add(moons[1].position);
 // moons.push(createMoon(1));
 
@@ -95,27 +95,27 @@ const controls = new OrbitControls(camera, renderer.domElement);
 //physics variables
 let clock = new THREE.Clock();
 let a, v = 0,
-  G, M, R,s=0.1,dt=1;
+  G, M, R, s = 0.1, dt = 1;
 
-  document.addEventListener("keydown", onDocumentKeyDown, false);
-  function onDocumentKeyDown(event) {
-      var keyCode = event.which;
-      if (keyCode == 87) {
-          s += 0.1;
-      } else if (keyCode == 83) {
-          s -= 0.1;
-      } else if (keyCode == 65) {
-          moons[0].position.x -= s;
-      } else if (keyCode == 68) {
-          moons[0].position.x += s;
-      } else if (keyCode == 32) {
-          moons[0].position.set(0, 0, 0);
-      }
-  };
+document.addEventListener("keydown", onDocumentKeyDown, false);
+function onDocumentKeyDown(event) {
+  var keyCode = event.which;
+  if (keyCode == 87) {
+    s += 0.1;
+  } else if (keyCode == 83) {
+    s -= 0.1;
+  } else if (keyCode == 65) {
+    moons[0].position.x -= s;
+  } else if (keyCode == 68) {
+    moons[0].position.x += s;
+  } else if (keyCode == 32) {
+    moons[0].position.set(0, 0, 0);
+  }
+};
 
 function Gravity(moon) {
   G = 6.674e-11;
-  M = 1e6 ;
+  M = 1e6;
   a = G * M / Math.sqrt(Math.pow(moon.position.y, 2) + Math.pow(moon.position.x, 2) + Math.pow(moon.position.z, 2));
   v = a / dt;
   let dest = getSlope(moon.position, new THREE.Vector3(0, 0, 0));
@@ -126,10 +126,10 @@ function Gravity(moon) {
   }
 }
 
-function Force(moon,destination) {
+function Force(moon, destination) {
   v = 0.005;
   let dest = getSlopeVector(destination.sub(moon.position));
-  const X = new THREE.Vector3(0,0,0).copy(moon.position);
+  const X = new THREE.Vector3(0, 0, 0).copy(moon.position);
   if (!(Math.sqrt(Math.pow(moon.position.y + v * dest[1], 2) + Math.pow(moon.position.x + v * dest[0], 2) + Math.pow(moon.position.z + v * dest[2], 2)) < 6)) {
     moon.position.x = v * dest[0] / dt;
     moon.position.y = v * dest[1] / dt;
@@ -143,25 +143,31 @@ function getSlope(p1, p2) {
   const dy = p2.y - p1.y;
   const dz = p2.z - p1.z;
 
-  const d = Math.sqrt(dx*dx + dy*dy + dz*dz);
+  const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
   return [dx / d, dy / d, dz / d];
 }
 
 function getSlopeVector(p) {
-  const d = Math.sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
+  const d = Math.sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
   return [p.x / d, p.y / d, p.z / d];
 }
 
+let time = Date.now()
+
 
 function animate() {
+  const currentTime = Date.now()
+  const deltaTime = time - currentTime
+  time = currentTime
+
   requestAnimationFrame(animate);
-  for (const moon of moons){
-  Gravity(moon);
+  for (const moon of moons) {
+    Gravity(moon);
   }
-  testMoonDest = Force(moons[1],testMoonDest);
+  testMoonDest = Force(moons[1], testMoonDest);
   controls.update();
-  dt+=0.001;
+  dt += 0.001;
   renderer.render(scene, camera);
 }
 
