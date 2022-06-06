@@ -17,7 +17,7 @@ const scene = new THREE.Scene();
 const textureLoader = new THREE.TextureLoader();
 
 // Earth
-const geometry = new THREE.SphereGeometry(5, 20, 20);
+const geometry = new THREE.SphereGeometry(6.378e6, 64, 64);
 const material = new THREE.MeshBasicMaterial({
   map: textureLoader.load(earthTexture),
 });
@@ -29,14 +29,12 @@ earth.position.set(0, 0, 0);
 const gltfLoader = new GLTFLoader();
 let satellite = new THREE.Object3D();
 
-gltfLoader.load("./assets/satellite.gltf",
-(gltf) => {
-  satellite = gltf.scene
+gltfLoader.load("./assets/satellite.gltf", (gltf) => {
+  satellite = gltf.scene;
   satellite.scale.set(0.009, 0.009, 0.009);
   satellite.position.set(0, 6, 0);
   scene.add(satellite);
-},);
-
+});
 
 //Background
 const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -74,11 +72,11 @@ const camera = new THREE.PerspectiveCamera(
   75,
   sizes.width / sizes.height,
   0.1,
-  1000
+  1e7
 );
 camera.position.x = 0;
 camera.position.y = 0;
-camera.position.z = 20;
+camera.position.z = 1.2756e7;
 scene.add(camera);
 
 /**
@@ -86,6 +84,8 @@ scene.add(camera);
  */
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector("#bg"),
+  antialias: true,
+  logarithmicDepthBuffer: true
 });
 renderer.setPixelRatio(window.devicePixelRatio, 2);
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -95,6 +95,7 @@ renderer.render(scene, camera);
 const pointLight = new THREE.PointLight(0xffffff);
 const ambientLight = new THREE.AmbientLight(0x444444);
 pointLight.position.set(5, 5, 5);
+//pointLight.power(1);
 scene.add(ambientLight);
 scene.add(pointLight);
 
@@ -109,49 +110,52 @@ function Vortex(satellite) {}
 var G = 6.6743e-11;
 var MEarth = 5.972e24;
 var g;
-// function Gravity() {
-//   //g = G * m(earth) / ((((((r^2))))))//////////////////////////////
-//   g =
-//     (G * MEarth) /
-//     Math.sqrt(
-//       Math.pow(satellite.position.x, 2) +
-//         Math.pow(satellite.position.y, 2) +
-//         Math.pow(satellite.position.z, 2)
-//     );
-//     console.log('test')
+function Gravity() {
+  //g = G * m(earth) / ((((((r^2))))))//////////////////////////////
+  g =
+    (G * MEarth) /
+    Math.sqrt(
+      Math.pow(satellite.position.x, 2) +
+      Math.pow(satellite.position.y, 2) +
+      Math.pow(satellite.position.z, 2)
+    );
+  console.log("test");
 
-//   //v = sqrt(G*m(erath)/r)
-//   v = sqrt(
-//     (G * MEarth) / Math.pow(satellite.position.x, 2) +
-//       Math.pow(satellite.position.y, 2) +
-//       Math.pow(satellite.position.z, 2)
-//   );
-//   newY = satellite.position.y - g;
-//   satellite.position.set(new Vector3(satellite.position.x, newY, satellite.position.z))
-//   console.log('test2')
-// }
+  //v = sqrt(G*m(erath)/r)
+  v = sqrt(
+    (G * MEarth) / Math.pow(satellite.position.x, 2) +
+      Math.pow(satellite.position.y, 2) +
+      Math.pow(satellite.position.z, 2)
+  );
+  newY = satellite.position.y - g;
+  satellite.position.set(
+    new Vector3(satellite.position.x, newY, satellite.position.z)
+  );
+  console.log("test2");
+}
 
+function distance(obj1, obj2) {
+  const xDist = obj2.x - obj1.x;
+  const yDist = obj2.y - obj1.y;
+  const zDist = obj2.z - obj1.z;
 
-// function distance(obj1, obj2) {
-//   const xDist = obj2.x - obj1.x;
-//   const yDist = obj2.y - obj1.y;
-//   const zDist = obj2.z - obj1.z;
-
-//   return Math.sqrt(
-//     Math.pow(xDist, 2) + Math.pow(yDist, 2) + Math.pow(zDist, 2)
-//   );
-// }
+  return Math.sqrt(
+    Math.pow(xDist, 2) + Math.pow(yDist, 2) + Math.pow(zDist, 2)
+  );
+}
 
 function animate() {
   elapsedTime = clock.getElapsedTime() + 1;
   var delta = clock.getDelta();
   // Satllite position
-  satellite.position.set(Math.sin(elapsedTime/2) * 3, 5, Math.cos(elapsedTime/2) * 3)
+  satellite.position.set(
+    Math.sin(elapsedTime / 2) * 3,
+    5,
+    Math.cos(elapsedTime / 2) * 3
+  );
   // satellite.rotation.x += 0.4 * delta;
   // satellite.rotation.y += 0.2 * delta;
-  //Gravity();
-  deltaTime = clock.getElapsedTime() + 1;
-  console.log(deltaTime);
+  // Gravity()
   earth.rotateY(0.004);
   requestAnimationFrame(animate);
   controls.update();
