@@ -7,14 +7,6 @@ import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-function createMoon(radius) {
-  const geometry = new THREE.SphereGeometry(radius);
-  const material = new THREE.MeshStandardMaterial({ color: 0xaaaaaa });
-  const mesh = new THREE.Mesh(geometry, material);
-  scene.add(mesh);
-  return mesh;
-}
-
 // Debug
 const gui = new dat.GUI();
 
@@ -35,20 +27,16 @@ earth.position.set(0, 0, 0);
 
 // Models
 const gltfLoader = new GLTFLoader();
-let satellite;
+let satellite = new THREE.Object3D();
 
-gltfLoader.load("./assets/satellite.gltf", (gltf) => {
-  satellite = gltf.scene;
+gltfLoader.load("./assets/satellite.gltf",
+(gltf) => {
+  satellite = gltf.scene
   satellite.scale.set(0.009, 0.009, 0.009);
-  satellite.position.set(5, 5, 5);
+  satellite.position.set(5,0,5)
   scene.add(satellite);
-});
-gltfLoader.load("./assets/satellite.gltf", (gltf) => {
-  let satellite1 = gltf.scene;
-  satellite1.scale.set(0.009, 0.009, 0.009);
-  satellite1.position.set(5, 0, 5);
-  scene.add(satellite1);
-});
+},);
+
 
 //Background
 const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -114,13 +102,17 @@ const controls = new OrbitControls(camera, renderer.domElement);
 
 //physics variables
 let clock = new THREE.Clock();
-let deltaTime = 1;
+let elapsedTime = 1;
 
 function Vortex(satellite) {}
 
 function animate() {
-  deltaTime = clock.getElapsedTime() + 1;
-  console.log(deltaTime);
+  elapsedTime = clock.getElapsedTime() + 1;
+  var delta = clock.getDelta();
+  // Satllite position
+  satellite.position.set(Math.sin(elapsedTime/2) * 3, 5, Math.cos(elapsedTime/2) * 3)
+  // satellite.rotation.x += 0.4 * delta;
+  // satellite.rotation.y += 0.2 * delta;
   earth.rotateY(0.004);
   requestAnimationFrame(animate);
   controls.update();
