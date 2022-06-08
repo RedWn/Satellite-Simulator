@@ -3,7 +3,6 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import * as dat from "dat.gui";
 import { Vector3 } from "three";
 import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
@@ -11,8 +10,6 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 const EARTH_RADIUS = 6.378e6;
 
-// Debug
-const gui = new dat.GUI();
 
 //Scene
 const scene = new THREE.Scene();
@@ -92,7 +89,7 @@ camera.position.z = EARTH_RADIUS * 2;
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({
-  canvas: document.querySelector("#bg"),
+  canvas: document.querySelector("#bg") ?? undefined,
   antialias: true,
   logarithmicDepthBuffer: true
 });
@@ -128,7 +125,6 @@ function Gravity() {
       Math.pow(satellite.position.y, 2) +
       Math.pow(satellite.position.z, 2)
     );
-  console.log("test");
 
   //v = sqrt(G*m(erath)/r)
   const v = Math.sqrt(
@@ -137,7 +133,6 @@ function Gravity() {
       Math.pow(satellite.position.z, 2)
   );
   // satellite.position.y -= g;
-  console.log("test2");
 }
 
   //v = Math.sqrt((G * MEarth) / distance(new Vector3(0, 0, 0), satellite.position));
@@ -147,7 +142,7 @@ function Gravity() {
   //satellite.position.set(
   //   new Vector3(satellite.position.x, newY, satellite.position.z)
   // );
-}
+// }
 
 function distance(vector1, vector2) {
   let xDist = vector2.x - vector1.x;

@@ -12,7 +12,9 @@
     "vite-plugin-string": "^1.1.2"
   },
   "dependencies": {
+    "@types/three": "^0.141.0",
     "dat.gui": "^0.7.9",
-    "three": "^0.139.2"
+    "three": "^0.139.2",
+    "typescript": "^4.7.3"
   }
 }
