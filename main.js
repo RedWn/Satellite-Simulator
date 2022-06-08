@@ -7,8 +7,7 @@ import { Vector3 } from "three";
 import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-
-const EARTH_RADIUS = 6.378e6;
+import { EARTH_MASS, EARTH_RADIUS, GRAVITY_CONSTATNT } from "./Constants.js";
 
 
 //Scene
@@ -113,13 +112,11 @@ let elapsedTime = 1;
 
 function Vortex(satellite) {}
 
-let G = 6.6743e-11;
-let MEarth = 5.972e24;
-let g;
+let gravity;
 function Gravity() {
   //g = G * m(earth) / r^2
-  g =
-    (G * MEarth) /
+  gravity =
+    (GRAVITY_CONSTATNT * EARTH_MASS) /
     Math.sqrt(
       Math.pow(satellite.position.x, 2) +
       Math.pow(satellite.position.y, 2) +
@@ -127,8 +124,8 @@ function Gravity() {
     );
 
   //v = sqrt(G*m(erath)/r)
-  const v = Math.sqrt(
-    (G * MEarth) / Math.pow(satellite.position.x, 2) +
+  const velocity = Math.sqrt(
+    (GRAVITY_CONSTATNT * EARTH_MASS) / Math.pow(satellite.position.x, 2) +
       Math.pow(satellite.position.y, 2) +
       Math.pow(satellite.position.z, 2)
   );
@@ -143,6 +140,7 @@ function Gravity() {
   //   new Vector3(satellite.position.x, newY, satellite.position.z)
   // );
 // }
+
 
 function distance(vector1, vector2) {
   let xDist = vector2.x - vector1.x;
