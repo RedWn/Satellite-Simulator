@@ -7,15 +7,12 @@ import { Vector3 } from "three";
 import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { EARTH_MASS, EARTH_RADIUS, GRAVITY_CONSTATNT } from "./Constants.js";
+import { EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT } from "./constants.js";
 
-
-//Scene
 const scene = new THREE.Scene();
 
 scene.add(new THREE.AxesHelper(EARTH_RADIUS / 10));
 
-// Texture
 const textureLoader = new THREE.TextureLoader();
 
 // Earth
@@ -40,7 +37,7 @@ gltfLoader.load("./assets/satellite.gltf", (gltf) => {
 });
 // satellite.scale.multiplyScalar(100000)
 // satellite.position.set(0, 6.378e7, 0)
-satellite.position.set(EARTH_RADIUS + 1e3, EARTH_RADIUS + 1e3, 0);
+satellite.position.set(EARTH_RADIUS * 1.2, EARTH_RADIUS + 1e3, EARTH_RADIUS + 1e3);
 scene.add(satellite);
 
 //Background
@@ -74,7 +71,6 @@ window.addEventListener("resize", () => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
-// Camera
 const camera = new THREE.PerspectiveCamera(
   75,
   sizes.width / sizes.height,
@@ -90,7 +86,7 @@ camera.position.z = EARTH_RADIUS * 2;
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector("#bg") ?? undefined,
   antialias: true,
-  logarithmicDepthBuffer: true
+  logarithmicDepthBuffer: true,
 });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -106,65 +102,50 @@ scene.add(pointLight);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
-//physics variables
+const gravity = new Vector3();
+const deltaVelocity = new Vector3();
+const displacement = new Vector3();
+
+/**
+ * @param {number} [deltaTime]
+ */
+function applyGravity(satellite, deltaTime) {
+  
+  gravity.subVectors(earth.position, satellite.position);
+  const distanceSq = gravity.lengthSq();
+  const gravityForce = (GRAVITY_CONSTANT * EARTH_MASS) / distanceSq;
+  gravity.normalize().multiplyScalar(gravityForce);
+
+  
+  deltaVelocity.copy(gravity).multiplyScalar(deltaTime);
+  console.log(deltaVelocity);
+
+  
+  displacement.copy(deltaVelocity).multiplyScalar(deltaTime);
+
+  satellite.position.add(displacement);
+
+  if (satellite.position.lengthSq() < EARTH_RADIUS_SQ){
+    scene.remove(satellite);
+    satellite.visible = false;
+  }
+  
+}
+
 let clock = new THREE.Clock();
+let previousTime = Date.now();
 let elapsedTime = 1;
 
-function Vortex(satellite) {}
-
-let gravity;
-function Gravity() {
-  //g = G * m(earth) / r^2
-  gravity =
-    (GRAVITY_CONSTATNT * EARTH_MASS) /
-    Math.sqrt(
-      Math.pow(satellite.position.x, 2) +
-      Math.pow(satellite.position.y, 2) +
-      Math.pow(satellite.position.z, 2)
-    );
-
-  //v = sqrt(G*m(erath)/r)
-  const velocity = Math.sqrt(
-    (GRAVITY_CONSTATNT * EARTH_MASS) / Math.pow(satellite.position.x, 2) +
-      Math.pow(satellite.position.y, 2) +
-      Math.pow(satellite.position.z, 2)
-  );
-  // satellite.position.y -= g;
-}
-
-  //v = Math.sqrt((G * MEarth) / distance(new Vector3(0, 0, 0), satellite.position));
-
-  //let newY = satellite.position.y - (0.5 * g * Math.pow(elapsedTime, 2));
-  //console.log("newY: "+ newY)
-  //satellite.position.set(
-  //   new Vector3(satellite.position.x, newY, satellite.position.z)
-  // );
-// }
-
-
-function distance(vector1, vector2) {
-  let xDist = vector2.x - vector1.x;
-  let yDist = vector2.y - vector1.y;
-  let zDist = vector2.z - vector1.z;
-  let r = Math.sqrt(
-    Math.pow(xDist, 2) + Math.pow(yDist, 2) + Math.pow(zDist, 2)
-  );
-  console.log("distance " + r);
-  return r;
-}
-
 function animate() {
-  Gravity();
   elapsedTime = clock.getElapsedTime() + 1;
-  let delta = clock.getDelta();
-  // Satllite position
-  // satellite.position.set(
-  //   Math.sin(elapsedTime / 2) * EARTH_RADIUS,
-  //   0,
-  //   Math.cos(elapsedTime / 2) * EARTH_RADIUS
-  // );
-  // satellite.rotation.x += 0.4 * delta;
-  // satellite.rotation.y += 0.2 * delta;
+  //delta = clock.getDelta();
+  const currentTime = Date.now();
+  const deltaTime = (currentTime - previousTime) / 1000;
+  previousTime = currentTime;
+
+  if(satellite.visible)
+    applyGravity(satellite, deltaTime * 1e3);
+
   earth.rotateY(0.004);
   requestAnimationFrame(animate);
   controls.update();
