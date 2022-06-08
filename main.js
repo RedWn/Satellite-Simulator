@@ -1,11 +1,15 @@
+// @ts-check
+
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "dat.gui";
-import { Clock, ClosedSplineCurve3, Vector3 } from "three.js";
+import { Vector3 } from "three";
 import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+
+const EARTH_RADIUS = 6.378e6;
 
 // Debug
 const gui = new dat.GUI();
@@ -13,28 +17,35 @@ const gui = new dat.GUI();
 //Scene
 const scene = new THREE.Scene();
 
+scene.add(new THREE.AxesHelper(EARTH_RADIUS / 10));
+
 // Texture
 const textureLoader = new THREE.TextureLoader();
 
 // Earth
-const geometry = new THREE.SphereGeometry(6.378e6, 64, 64);
+const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
 const material = new THREE.MeshBasicMaterial({
   map: textureLoader.load(earthTexture),
+  wireframe: true,
 });
+
 const earth = new THREE.Mesh(geometry, material);
 scene.add(earth);
 earth.position.set(0, 0, 0);
 
 // Models
 const gltfLoader = new GLTFLoader();
-let satellite = new THREE.Object3D();
+const satellite = new THREE.Object3D();
 
 gltfLoader.load("./assets/satellite.gltf", (gltf) => {
-  satellite = gltf.scene;
-  satellite.scale.set(0.009, 0.009, 0.009);
-  satellite.position.set(0, 6379000, 0);
-  scene.add(satellite);
+  satellite.add(gltf.scene);
+  gltf.scene.position.y = -40;
+  satellite.scale.multiplyScalar(1e4);
 });
+// satellite.scale.multiplyScalar(100000)
+// satellite.position.set(0, 6.378e7, 0)
+satellite.position.set(EARTH_RADIUS + 1e3, EARTH_RADIUS + 1e3, 0);
+scene.add(satellite);
 
 //Background
 const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -72,12 +83,10 @@ const camera = new THREE.PerspectiveCamera(
   75,
   sizes.width / sizes.height,
   0.1,
-  1e7
+  1e9
 );
-camera.position.x = 0;
-camera.position.y = 0;
-camera.position.z = 1.2756e7;
-scene.add(camera);
+
+camera.position.z = EARTH_RADIUS * 2;
 
 /**
  * Renderer
@@ -87,7 +96,7 @@ const renderer = new THREE.WebGLRenderer({
   antialias: true,
   logarithmicDepthBuffer: true
 });
-renderer.setPixelRatio(window.devicePixelRatio, 2);
+renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.render(scene, camera);
 
@@ -107,16 +116,29 @@ let elapsedTime = 1;
 
 function Vortex(satellite) {}
 
-var G = 6.6743e-11;
-var MEarth = 5.972e24;
-var g;
-
+let G = 6.6743e-11;
+let MEarth = 5.972e24;
+let g;
 function Gravity() {
   //g = G * m(earth) / r^2
   g =
     (G * MEarth) /
-    Math.pow(distance(new Vector3(0, 0, 0), satellite.position), 2);
-  //v = sqrt(G*m(earth)/r)
+    Math.sqrt(
+      Math.pow(satellite.position.x, 2) +
+      Math.pow(satellite.position.y, 2) +
+      Math.pow(satellite.position.z, 2)
+    );
+  console.log("test");
+
+  //v = sqrt(G*m(erath)/r)
+  const v = Math.sqrt(
+    (G * MEarth) / Math.pow(satellite.position.x, 2) +
+      Math.pow(satellite.position.y, 2) +
+      Math.pow(satellite.position.z, 2)
+  );
+  // satellite.position.y -= g;
+  console.log("test2");
+}
 
   //v = Math.sqrt((G * MEarth) / distance(new Vector3(0, 0, 0), satellite.position));
 
@@ -141,11 +163,12 @@ function distance(vector1, vector2) {
 function animate() {
   Gravity();
   elapsedTime = clock.getElapsedTime() + 1;
-  var delta = clock.getDelta();
+  let delta = clock.getDelta();
+  // Satllite position
   // satellite.position.set(
-  //   Math.sin(elapsedTime / 2) * 3,
-  //   5,
-  //   Math.cos(elapsedTime / 2) * 3
+  //   Math.sin(elapsedTime / 2) * EARTH_RADIUS,
+  //   0,
+  //   Math.cos(elapsedTime / 2) * EARTH_RADIUS
   // );
   // satellite.rotation.x += 0.4 * delta;
   // satellite.rotation.y += 0.2 * delta;
