@@ -6,4 +6,6 @@ export const EARTH_RADIUS_SQ = EARTH_RADIUS * EARTH_RADIUS;
 
 export const GRAVITY_CONSTANT = 6.6743e-11;
 
+export const EARTH_CIRCUMFERENCE = 2 * Math.PI * EARTH_RADIUS;
+
 

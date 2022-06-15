@@ -7,7 +7,7 @@ import { Vector3 } from "three";
 import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT } from "./constants.js";
+import { EARTH_CIRCUMFERENCE, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT } from "./constants.js";
 
 const scene = new THREE.Scene();
 
@@ -35,7 +35,6 @@ gltfLoader.load("./assets/satellite.gltf", (gltf) => {
   gltf.scene.position.y = -40;
   satellite.scale.multiplyScalar(1e4);
 });
-// satellite.scale.multiplyScalar(100000)
 // satellite.position.set(0, 6.378e7, 0)
 satellite.position.set(EARTH_RADIUS * 1.2, EARTH_RADIUS + 1e3, EARTH_RADIUS + 1e3);
 scene.add(satellite);
@@ -106,38 +105,39 @@ const gravity = new Vector3();
 const deltaVelocity = new Vector3();
 const displacement = new Vector3();
 
+
 /**
  * @param {number} [deltaTime]
  */
 function applyGravity(satellite, deltaTime) {
-  
   gravity.subVectors(earth.position, satellite.position);
   const distanceSq = gravity.lengthSq();
   const gravityForce = (GRAVITY_CONSTANT * EARTH_MASS) / distanceSq;
-  gravity.normalize().multiplyScalar(gravityForce);
+  gravity.normalize().multiplyScalar(gravityForce);  
 
-  
   deltaVelocity.copy(gravity).multiplyScalar(deltaTime);
   console.log(deltaVelocity);
-
   
   displacement.copy(deltaVelocity).multiplyScalar(deltaTime);
-
   satellite.position.add(displacement);
 
+  //collision detection with Earth
   if (satellite.position.lengthSq() < EARTH_RADIUS_SQ){
     scene.remove(satellite);
     satellite.visible = false;
   }
-  
 }
+
+// function height(){
+//   let h = EARTH_RADIUS * (1 - ( Math.cos(360/EARTH_CIRCUMFERENCE * displacement.length) ));
+// }
 
 let clock = new THREE.Clock();
 let previousTime = Date.now();
-let elapsedTime = 1;
+//let elapsedTime = 1;
 
 function animate() {
-  elapsedTime = clock.getElapsedTime() + 1;
+  //elapsedTime = clock.getElapsedTime() + 1;
   //delta = clock.getDelta();
   const currentTime = Date.now();
   const deltaTime = (currentTime - previousTime) / 1000;
