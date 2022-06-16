@@ -1,5 +1,8 @@
 // @ts-check
 
+// import Experience from './Experience/Experience'
+
+// const experience = new Experience(document.querySelector('#bg'))
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -7,7 +10,7 @@ import { LineLoop, Vector3 } from "three";
 import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { EARTH_CIRCUMFERENCE, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT } from "./constants.js";
+import { EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT } from "./Experience/Constants";
 
 import GUI from 'lil-gui'; 
 const gui = new GUI();

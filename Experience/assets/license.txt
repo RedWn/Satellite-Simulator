@@ -1,0 +1,11 @@
+Model Information:
+* title:	Satellite - Draft XYZ Homework
+* source:	https://sketchfab.com/3d-models/satellite-draft-xyz-homework-bb05cc3aad6e4a589f6ee8d837bdfce5
+* author:	Andrey Borisov (https://sketchfab.com/Andrey_Borisov)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Satellite - Draft XYZ Homework" (https://sketchfab.com/3d-models/satellite-draft-xyz-homework-bb05cc3aad6e4a589f6ee8d837bdfce5) by Andrey Borisov (https://sketchfab.com/Andrey_Borisov) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
