@@ -36,7 +36,7 @@ gltfLoader.load("./assets/satellite.gltf", (gltf) => {
   satellite.scale.multiplyScalar(1e4);
 });
 // satellite.position.set(0, 6.378e7, 0)
-satellite.position.set(EARTH_RADIUS * 1.2, EARTH_RADIUS + 1e3, EARTH_RADIUS + 1e3);
+satellite.position.set(0, EARTH_RADIUS * 1.5, 0);
 scene.add(satellite);
 
 //Background
@@ -106,8 +106,8 @@ const satelliteV = new Vector3();
 const satelliteX = new Vector3();
 
 function initSpeed(satellite, vec, V) {
-  satelliteV.copy(vec.multiplyScalar(V));
-  console.log(satelliteV);
+  satelliteV.add(vec.multiplyScalar(V));
+  // console.log(satelliteV);                             
 }
 
 const gravity1 = new Vector3();
@@ -144,21 +144,20 @@ document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
   var keyCode = event.which;
   if (keyCode == 87) {//W
-    // initSpeed(satellite, new Vector3(1, 0, 0), 10);
+    const temp = new Vector3();
+    initSpeed(satellite, temp.copy(satelliteV).normalize(), 1000);
   }
-  if (keyCode == 81) {//Q
-    // Dcof -= 100;
+  if (keyCode == 83) {//S
+    const temp = new Vector3();
+    initSpeed(satellite, temp.copy(satelliteV).normalize().multiplyScalar(-1), 1000);
   }
-  if (keyCode == 69) {//E
 
-  }
 };
 
 let previousTime = Date.now();
 const tempV = new Vector3();
 const totalForce = new Vector3();
-// addForce(satellite, new Vector3(1, 0, 0), 1e3);
-initSpeed(satellite, new Vector3(1, 0, 1).normalize(), 20000);
+initSpeed(satellite, new Vector3(1, 0, 0).normalize(), 20000);
 
 function animate() {
   const currentTime = Date.now();
@@ -173,7 +172,7 @@ function animate() {
 
     satelliteX.copy(satelliteV).multiplyScalar(deltaTime);
     satellite.position.add(satelliteX);
-    console.log(satelliteV);
+    // console.log(satelliteV);
   }
 
   earth.rotateY(0.004);
