@@ -30,10 +30,11 @@ earth.position.set(0, 0, 0);
 const gltfLoader = new GLTFLoader();
 const satellite = new THREE.Object3D();
 
-gltfLoader.load("./assets/satellite.gltf", (gltf) => {
+gltfLoader.load("./assets/sputnik.gltf", (gltf) => {
   satellite.add(gltf.scene);
-  gltf.scene.position.y = -40;
-  satellite.scale.multiplyScalar(1e4);
+  // gltf.scene.position.y = -40;
+  satellite.scale.multiplyScalar(1e5);
+
 });
 // satellite.position.set(0, 6.378e7, 0)
 satellite.position.set(0, EARTH_RADIUS * 1.5, 0);
@@ -165,7 +166,8 @@ function animate() {
 
   if (satellite.visible) {
     if ((satellite.position.lengthSq() < EARTH_RADIUS_SQ * 1.1)) {
-      dragForce(satellite);
+      // dragForce(satellite);
+      console.log("Hi");
     }
     const tempV = new Vector3();
     tempV.copy(gravity).multiplyScalar(deltaTime)
