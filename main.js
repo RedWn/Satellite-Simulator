@@ -17,7 +17,7 @@ const textureLoader = new THREE.TextureLoader();
 
 // Earth
 const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
-const material = new THREE.MeshBasicMaterial({
+const material = new THREE.MeshStandardMaterial({
   map: textureLoader.load(earthTexture),
   // wireframe: true,
 });
@@ -94,7 +94,7 @@ renderer.render(scene, camera);
 //Lights
 const pointLight = new THREE.PointLight(0xffffff);
 const ambientLight = new THREE.AmbientLight(0x444444);
-pointLight.position.set(5, 5, 5);
+pointLight.position.set(EARTH_RADIUS * 3, 0, 0);
 //pointLight.power(1);
 scene.add(ambientLight);
 scene.add(pointLight);
@@ -110,24 +110,15 @@ function initSpeed(satellite, vec, V) {
   // console.log(satelliteV);                             
 }
 
-const gravity1 = new Vector3();
 const gravity = new Vector3();
-const gravityD = new Vector3();
-const deltaVelocity = new Vector3();
-const displacement = new Vector3();
 const satelliteMass = 10;
 let prevTime = 0;
 
 function applyGravity(satellite) {
-  gravity1.copy(gravity);
   gravity.subVectors(earth.position, satellite.position);
   const distanceSq = gravity.lengthSq();
   const gravityForce = (GRAVITY_CONSTANT * EARTH_MASS * satelliteMass) / distanceSq;
   gravity.normalize().multiplyScalar(gravityForce);
-  // satellite.position.add(displacement);
-  satelliteA.copy(gravity);
-  gravityD.subVectors(gravity, gravity1);
-  // gravityD.normalize().multiplyScalar(deltaTime);
 
   //collision detection with Earth
   if (satellite.position.lengthSq() < EARTH_RADIUS_SQ) {
@@ -136,6 +127,13 @@ function applyGravity(satellite) {
   }
 }
 
+const DF = new Vector3();
+function dragForce(satellite) {
+  const DForce = 0.5 * 1e-3 * satelliteV.lengthSq() * 0.47 * 2 * Math.PI * satellite.raduis * satellite.raduis;
+  const temp = new Vector3();
+  temp.copy(satelliteV).normalize().multiplyScalar(-1);
+  DF.copy(temp).multiplyScalar(DForce);
+}
 // function height(){
 //   let h = EARTH_RADIUS * (1 - ( Math.cos(360/EARTH_CIRCUMFERENCE * displacement.length) ));
 // }
@@ -155,8 +153,7 @@ function onDocumentKeyDown(event) {
 };
 
 let previousTime = Date.now();
-const tempV = new Vector3();
-const totalForce = new Vector3();
+
 initSpeed(satellite, new Vector3(1, 0, 0).normalize(), 20000);
 
 function animate() {
@@ -167,8 +164,16 @@ function animate() {
   applyGravity(satellite);
 
   if (satellite.visible) {
-    tempV.copy(satelliteA).multiplyScalar(deltaTime)
+    if ((satellite.position.lengthSq() < EARTH_RADIUS_SQ * 1.1)) {
+      dragForce(satellite);
+    }
+    const tempV = new Vector3();
+    tempV.copy(gravity).multiplyScalar(deltaTime)
     satelliteV.add(tempV);
+
+    const tempV2 = new Vector3();
+    tempV2.copy(DF).multiplyScalar(deltaTime)
+    satelliteV.add(tempV2);
 
     satelliteX.copy(satelliteV).multiplyScalar(deltaTime);
     satellite.position.add(satelliteX);
