@@ -7,9 +7,9 @@ import { LineLoop, Vector3 } from "three";
 import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { EARTH_CIRCUMFERENCE, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT } from "./constants.js";
+import { EARTH_CIRCUMFERENCE, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT } from "./Constants.js";
 
-import GUI from 'lil-gui'; 
+import GUI from 'lil-gui';
 const gui = new GUI();
 
 const scene = new THREE.Scene();
@@ -22,7 +22,7 @@ const textureLoader = new THREE.TextureLoader();
 const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
 const material = new THREE.MeshBasicMaterial({
   map: textureLoader.load(earthTexture),
-  wireframe: true,
+  // wireframe: true,
 });
 
 const earth = new THREE.Mesh(geometry, material);
@@ -47,23 +47,23 @@ var satellites = new Array();
 satellites.push(satellite);
 
 const satelliteFolder = gui.addFolder('satellite position');
-satelliteFolder.add( satellite.position, 'x').min(-7653600).max(7653600).step(10).name('satelite position x');
-satelliteFolder.add( satellite.position, 'y').min(-7653600).max(7653600).step(10).name('satelite position y');
-satelliteFolder.add( satellite.position, 'z').min(-7653600).max(7653600).step(10).name('satelite position z');
+satelliteFolder.add(satellite.position, 'x').min(-7653600).max(7653600).step(10).name('satelite position x');
+satelliteFolder.add(satellite.position, 'y').min(-7653600).max(7653600).step(10).name('satelite position y');
+satelliteFolder.add(satellite.position, 'z').min(-7653600).max(7653600).step(10).name('satelite position z');
 
 const AddSatelliteFolder = gui.addFolder('Add Satellite');
 
 let satelliteGuiValues = {};
 
 const satGui = {
-	x: 7653600, y: 7653600, z: 7653600,
-	saveSatellite() {
-		// save current values to an object
-		satelliteGuiValues = gui.save();
-		loadButton.enable();
-	},
-	AddSatellite() {
-    gui.load( satelliteGuiValues );
+  x: 7653600, y: 7653600, z: 7653600,
+  saveSatellite() {
+    // save current values to an object
+    satelliteGuiValues = gui.save();
+    loadButton.enable();
+  },
+  AddSatellite() {
+    gui.load(satelliteGuiValues);
     let satellite = new THREE.Object3D();
     gltfLoader.load("./assets/satellite.gltf", (gltf) => {
       satellite.add(gltf.scene);
@@ -74,13 +74,13 @@ const satGui = {
     });
     scene.add(satellite);
     satellites.push(satellite);
-	}
+  }
 }
-AddSatelliteFolder.add( satGui, 'x').min(-7653600).max(7653600).step(10).name('satelite position x');
-AddSatelliteFolder.add( satGui, 'y').min(-7653600).max(7653600).step(10).name('satelite position y');
-AddSatelliteFolder.add( satGui, 'z').min(-7653600).max(7653600).step(10).name('satelite position z');
-AddSatelliteFolder.add( satGui, 'saveSatellite' );
-const loadButton = AddSatelliteFolder.add( satGui, 'AddSatellite' ).disable();
+AddSatelliteFolder.add(satGui, 'x').min(-7653600).max(7653600).step(10).name('satelite position x');
+AddSatelliteFolder.add(satGui, 'y').min(-7653600).max(7653600).step(10).name('satelite position y');
+AddSatelliteFolder.add(satGui, 'z').min(-7653600).max(7653600).step(10).name('satelite position z');
+AddSatelliteFolder.add(satGui, 'saveSatellite');
+const loadButton = AddSatelliteFolder.add(satGui, 'AddSatellite').disable();
 
 //Background
 const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -144,28 +144,37 @@ scene.add(pointLight);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
+const satelliteA = new Vector3();
+const satelliteV = new Vector3();
+const satelliteX = new Vector3();
+
+function initSpeed(satellite, vec, V) {
+  satelliteV.copy(vec.multiplyScalar(V));
+  console.log(satelliteV);
+}
+
+const gravity1 = new Vector3();
 const gravity = new Vector3();
+const gravityD = new Vector3();
 const deltaVelocity = new Vector3();
 const displacement = new Vector3();
+const satelliteMass = 10;
+let prevTime = 0;
 
-/**
- * @param {number} [deltaTime]
- */
-function applyGravity(satellite, deltaTime) {
+function applyGravity(satellite) {
+  gravity1.copy(gravity);
   gravity.subVectors(earth.position, satellite.position);
   const distanceSq = gravity.lengthSq();
-  const gravityForce = (GRAVITY_CONSTANT * EARTH_MASS) / distanceSq;
-  gravity.normalize().multiplyScalar(gravityForce);  
-
-  deltaVelocity.copy(gravity).multiplyScalar(deltaTime);
-  console.log(deltaVelocity);
-  
-  displacement.copy(deltaVelocity).multiplyScalar(deltaTime);
-  satellite.position.add(displacement);
+  const gravityForce = (GRAVITY_CONSTANT * EARTH_MASS * satelliteMass) / distanceSq;
+  gravity.normalize().multiplyScalar(gravityForce);
+  // satellite.position.add(displacement);
+  satelliteA.copy(gravity);
+  gravityD.subVectors(gravity, gravity1);
+  // gravityD.normalize().multiplyScalar(deltaTime);
 
   //collision detection with Earth
   //delete collided satellite
-  if (satellite.position.lengthSq() < EARTH_RADIUS_SQ){
+  if (satellite.position.lengthSq() < EARTH_RADIUS_SQ) {
     const index = satellites.indexOf(satellite);
     if (index > -1) {
       satellites.splice(index, 1); // 2nd parameter means remove one item only
@@ -179,22 +188,41 @@ function applyGravity(satellite, deltaTime) {
 //   let h = EARTH_RADIUS * (1 - ( Math.cos(360/EARTH_CIRCUMFERENCE * displacement.length) ));
 // }
 
-let clock = new THREE.Clock();
+document.addEventListener("keydown", onDocumentKeyDown, false);
+function onDocumentKeyDown(event) {
+  var keyCode = event.which;
+  if (keyCode == 87) {//W
+    // initSpeed(satellite, new Vector3(1, 0, 0), 10);
+  }
+  if (keyCode == 81) {//Q
+    // Dcof -= 100;
+  }
+  if (keyCode == 69) {//E
+
+  }
+};
+
 let previousTime = Date.now();
-//let elapsedTime = 1;
+const tempV = new Vector3();
+const totalForce = new Vector3();
+// addForce(satellite, new Vector3(1, 0, 0), 1e3);
+initSpeed(satellite, new Vector3(1, 0, 1).normalize(), 20000);
 
 function animate() {
-  //elapsedTime = clock.getElapsedTime() + 1;
-  //delta = clock.getDelta();
   const currentTime = Date.now();
-  const deltaTime = (currentTime - previousTime) / 1000;
+  const deltaTime = (currentTime - previousTime) / 10;
   previousTime = currentTime;
 
-  satellites.forEach(element => {
-    if(element.visible)
-      applyGravity(element, deltaTime * 1e3);
-  });
-  
+  applyGravity(satellite);
+
+  if (satellite.visible) {
+    tempV.copy(satelliteA).multiplyScalar(deltaTime)
+    satelliteV.add(tempV);
+
+    satelliteX.copy(satelliteV).multiplyScalar(deltaTime);
+    satellite.position.add(satelliteX);
+    console.log(satelliteV);
+  }
 
   earth.rotateY(0.004);
   requestAnimationFrame(animate);
