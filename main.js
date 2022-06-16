@@ -1,122 +1,156 @@
+// @ts-check
+
+import Experience from './Experience/Experience'
+
+const experience = new Experience(document.querySelector('#bg'))
 import "./style.css";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import * as dat from "dat.gui";
-import { Vector3 } from "three.js";
-import starsTexture from "./assets/stars.jpg";
-import earthTexture from "./assets/earth.jpg";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+// import * as THREE from "three";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+// import { Vector3 } from "three";
+// import starsTexture from "./assets/stars.jpg";
+// import earthTexture from "./assets/earth.jpg";
+// import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+// import { EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT } from "./constants";
 
-// Debug
-const gui = new dat.GUI();
+// const scene = new THREE.Scene();
 
-//Scene
-const scene = new THREE.Scene();
+// scene.add(new THREE.AxesHelper(EARTH_RADIUS / 10));
 
-// Texture
-const textureLoader = new THREE.TextureLoader();
+// const textureLoader = new THREE.TextureLoader();
 
-// Earth
-const geometry = new THREE.SphereGeometry(5, 20, 20);
-const material = new THREE.MeshBasicMaterial({
-  map: textureLoader.load(earthTexture),
-});
-const earth = new THREE.Mesh(geometry, material);
-scene.add(earth);
-earth.position.set(0, 0, 0);
+// // Earth
+// const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
+// const material = new THREE.MeshBasicMaterial({
+//   map: textureLoader.load(earthTexture),
+//   wireframe: false,
+// });
 
-// Models
-const gltfLoader = new GLTFLoader();
-let satellite = new THREE.Object3D();
+// const earth = new THREE.Mesh(geometry, material);
+// scene.add(earth);
+// earth.position.set(0, 0, 0);
 
-gltfLoader.load("./assets/satellite.gltf",
-(gltf) => {
-  satellite = gltf.scene
-  satellite.scale.set(0.009, 0.009, 0.009);
-  satellite.position.set(5,0,5)
-  scene.add(satellite);
-},);
+// // Models
+// const gltfLoader = new GLTFLoader();
+// const satellite = new THREE.Object3D();
 
+// gltfLoader.load("./assets/satellite.gltf", (gltf) => {
+//   satellite.add(gltf.scene);
+//   gltf.scene.position.y = -40;
+//   satellite.scale.multiplyScalar(1e4);
+// });
+// satellite.position.set(EARTH_RADIUS * 1.2, EARTH_RADIUS + 1e3, EARTH_RADIUS + 1e3);
+// scene.add(satellite);
 
-//Background
-const cubeTextureLoader = new THREE.CubeTextureLoader();
-scene.background = cubeTextureLoader.load([
-  starsTexture,
-  starsTexture,
-  starsTexture,
-  starsTexture,
-  starsTexture,
-  starsTexture,
-]);
+// //Background
+// const cubeTextureLoader = new THREE.CubeTextureLoader();
+// scene.background = cubeTextureLoader.load([
+//   starsTexture,
+//   starsTexture,
+//   starsTexture,
+//   starsTexture,
+//   starsTexture,
+//   starsTexture,
+// ]);
 
-// Sizes
-const sizes = {
-  width: window.innerWidth,
-  height: window.innerHeight,
-};
+// // Sizes
+// const sizes = {
+//   width: window.innerWidth,
+//   height: window.innerHeight,
+// };
 
-window.addEventListener("resize", () => {
-  // Update sizes
-  sizes.width = window.innerWidth;
-  sizes.height = window.innerHeight;
+// window.addEventListener("resize", () => {
+//   // Update sizes
+//   sizes.width = window.innerWidth;
+//   sizes.height = window.innerHeight;
 
-  // Update camera
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
+//   // Update camera
+//   camera.aspect = sizes.width / sizes.height;
+//   camera.updateProjectionMatrix();
 
-  // Update renderer
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-});
+//   // Update renderer
+//   renderer.setSize(sizes.width, sizes.height);
+//   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// });
 
-// Camera
-const camera = new THREE.PerspectiveCamera(
-  75,
-  sizes.width / sizes.height,
-  0.1,
-  1000
-);
-camera.position.x = 0;
-camera.position.y = 0;
-camera.position.z = 20;
-scene.add(camera);
+// const camera = new THREE.PerspectiveCamera(
+//   75,
+//   sizes.width / sizes.height,
+//   0.1,
+//   1e9
+// );
 
-/**
- * Renderer
- */
-const renderer = new THREE.WebGLRenderer({
-  canvas: document.querySelector("#bg"),
-});
-renderer.setPixelRatio(window.devicePixelRatio, 2);
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.render(scene, camera);
+// camera.position.z = EARTH_RADIUS * 2;
 
-//Lights
-const pointLight = new THREE.PointLight(0xffffff);
-const ambientLight = new THREE.AmbientLight(0x444444);
-pointLight.position.set(5, 5, 5);
-scene.add(ambientLight);
-scene.add(pointLight);
+// /**
+//  * Renderer
+//  */
+// const renderer = new THREE.WebGLRenderer({
+//   canvas: document.querySelector("#bg") ?? undefined,
+//   antialias: true,
+//   logarithmicDepthBuffer: true,
+// });
+// renderer.setPixelRatio(window.devicePixelRatio);
+// renderer.setSize(window.innerWidth, window.innerHeight);
+// renderer.render(scene, camera);
 
-const controls = new OrbitControls(camera, renderer.domElement);
+// //Lights
+// const pointLight = new THREE.PointLight(0xffffff);
+// const ambientLight = new THREE.AmbientLight(0x444444);
+// pointLight.position.set(5, 5, 5);
+// //pointLight.power(1);
+// scene.add(ambientLight);
+// scene.add(pointLight);
 
-//physics variables
-let clock = new THREE.Clock();
-let elapsedTime = 1;
+// const controls = new OrbitControls(camera, renderer.domElement);
 
-function Vortex(satellite) {}
+// const gravity = new Vector3();
+// const deltaVelocity = new Vector3();
+// const displacement = new Vector3();
 
-function animate() {
-  elapsedTime = clock.getElapsedTime() + 1;
-  var delta = clock.getDelta();
-  // Satllite position
-  satellite.position.set(Math.sin(elapsedTime/2) * 3, 5, Math.cos(elapsedTime/2) * 3)
-  // satellite.rotation.x += 0.4 * delta;
-  // satellite.rotation.y += 0.2 * delta;
-  earth.rotateY(0.004);
-  requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene, camera);
-}
+// /**
+//  * @param {number} [deltaTime]
+//  */
+// function applyGravity(satellite, deltaTime) {
+  
+//   gravity.subVectors(earth.position, satellite.position);
+//   const distanceSq = gravity.lengthSq();
+//   const gravityForce = (GRAVITY_CONSTANT * EARTH_MASS) / distanceSq;
+//   gravity.normalize().multiplyScalar(gravityForce);
 
-animate();
+  
+//   deltaVelocity.copy(gravity).multiplyScalar(deltaTime);
+//   console.log(deltaVelocity);
+
+  
+//   displacement.copy(deltaVelocity).multiplyScalar(deltaTime);
+
+//   satellite.position.add(displacement);
+
+//   if (satellite.position.lengthSq() < EARTH_RADIUS_SQ){
+//     scene.remove(satellite);
+//     satellite.visible = false;
+//   }
+  
+// }
+
+// let clock = new THREE.Clock();
+// let previousTime = Date.now();
+// let elapsedTime = 1;
+
+// function animate() {
+//   elapsedTime = clock.getElapsedTime() + 1;
+//   //delta = clock.getDelta();
+//   const currentTime = Date.now();
+//   const deltaTime = (currentTime - previousTime) / 1000;
+//   previousTime = currentTime;
+
+//   if(satellite.visible)
+//     applyGravity(satellite, deltaTime * 1e3);
+
+//   earth.rotateY(0.004);
+//   requestAnimationFrame(animate);
+//   controls.update();
+//   renderer.render(scene, camera);
+// }
+
+// animate();
