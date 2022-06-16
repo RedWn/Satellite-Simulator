@@ -158,7 +158,6 @@ function applyGravity(satellite, deltaTime) {
   gravity.normalize().multiplyScalar(gravityForce);  
 
   deltaVelocity.copy(gravity).multiplyScalar(deltaTime);
-  console.log(deltaVelocity);
   
   displacement.copy(deltaVelocity).multiplyScalar(deltaTime);
   satellite.position.add(displacement);
@@ -173,10 +172,13 @@ function applyGravity(satellite, deltaTime) {
       satellite.visible = false;
     }
   }
+
+  //calculate height of satellite from surface of earth
+  let height = Math.sqrt(distanceSq) - EARTH_RADIUS
 }
 
 // function height(){
-//   let h = EARTH_RADIUS * (1 - ( Math.cos(360/EARTH_CIRCUMFERENCE * displacement.length) ));
+//   let h = EARTH_RADIUS * (1 - ( Math.cos(360/EARTH_CIRCUMFERENCE * displacement.length()) ));
 // }
 
 let clock = new THREE.Clock();
