@@ -3,14 +3,11 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { LineLoop, Vector3 } from "three";
+import { Vector3 } from "three";
 import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { EARTH_CIRCUMFERENCE, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT } from "./Constants.js";
-
-import GUI from 'lil-gui';
-const gui = new GUI();
 
 const scene = new THREE.Scene();
 
@@ -31,56 +28,16 @@ earth.position.set(0, 0, 0);
 
 // Models
 const gltfLoader = new GLTFLoader();
-
 const satellite = new THREE.Object3D();
 
 gltfLoader.load("./assets/satellite.gltf", (gltf) => {
   satellite.add(gltf.scene);
   gltf.scene.position.y = -40;
   satellite.scale.multiplyScalar(1e4);
-  satellite.position.set(EARTH_RADIUS * 1.2, EARTH_RADIUS + 1e3, EARTH_RADIUS + 1e3);
 });
 // satellite.position.set(0, 6.378e7, 0)
+satellite.position.set(EARTH_RADIUS * 1.2, EARTH_RADIUS + 1e3, EARTH_RADIUS + 1e3);
 scene.add(satellite);
-
-var satellites = new Array();
-satellites.push(satellite);
-
-const satelliteFolder = gui.addFolder('satellite position');
-satelliteFolder.add(satellite.position, 'x').min(-7653600).max(7653600).step(10).name('satelite position x');
-satelliteFolder.add(satellite.position, 'y').min(-7653600).max(7653600).step(10).name('satelite position y');
-satelliteFolder.add(satellite.position, 'z').min(-7653600).max(7653600).step(10).name('satelite position z');
-
-const AddSatelliteFolder = gui.addFolder('Add Satellite');
-
-let satelliteGuiValues = {};
-
-const satGui = {
-  x: 7653600, y: 7653600, z: 7653600,
-  saveSatellite() {
-    // save current values to an object
-    satelliteGuiValues = gui.save();
-    loadButton.enable();
-  },
-  AddSatellite() {
-    gui.load(satelliteGuiValues);
-    let satellite = new THREE.Object3D();
-    gltfLoader.load("./assets/satellite.gltf", (gltf) => {
-      satellite.add(gltf.scene);
-      gltf.scene.position.y = -40;              //TODO: ask hamsho if this line is important
-      satellite.scale.multiplyScalar(1e4 + 30000); //TODO delete 2000 later
-      //satellite.lookAt(earth.position);           is not working (dunno why)
-      satellite.position.set(this.x, this.y, this.z);
-    });
-    scene.add(satellite);
-    satellites.push(satellite);
-  }
-}
-AddSatelliteFolder.add(satGui, 'x').min(-7653600).max(7653600).step(10).name('satelite position x');
-AddSatelliteFolder.add(satGui, 'y').min(-7653600).max(7653600).step(10).name('satelite position y');
-AddSatelliteFolder.add(satGui, 'z').min(-7653600).max(7653600).step(10).name('satelite position z');
-AddSatelliteFolder.add(satGui, 'saveSatellite');
-const loadButton = AddSatelliteFolder.add(satGui, 'AddSatellite').disable();
 
 //Background
 const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -173,12 +130,7 @@ function applyGravity(satellite) {
   // gravityD.normalize().multiplyScalar(deltaTime);
 
   //collision detection with Earth
-  //delete collided satellite
   if (satellite.position.lengthSq() < EARTH_RADIUS_SQ) {
-    const index = satellites.indexOf(satellite);
-    if (index > -1) {
-      satellites.splice(index, 1); // 2nd parameter means remove one item only
-    }
     scene.remove(satellite);
     satellite.visible = false;
   }
