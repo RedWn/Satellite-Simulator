@@ -68,7 +68,7 @@ const satGui = {
     gltfLoader.load("./assets/satellite.gltf", (gltf) => {
       satellite.add(gltf.scene);
       gltf.scene.position.y = -40;              //TODO: ask hamsho if this line is important
-      satellite.scale.multiplyScalar(1e4 + 30000); //TODO delete 2000 later
+      satellite.scale.multiplyScalar(1e4 + 30000); //TODO delete 30000 later
       //satellite.lookAt(earth.position);           is not working (dunno why)
       satellite.position.set(this.x, this.y, this.z);
     });
@@ -169,9 +169,9 @@ function applyGravity(satellite, deltaTime) {
     const index = satellites.indexOf(satellite);
     if (index > -1) {
       satellites.splice(index, 1); // 2nd parameter means remove one item only
+      scene.remove(satellite);
+      satellite.visible = false;
     }
-    scene.remove(satellite);
-    satellite.visible = false;
   }
 }
 
@@ -183,11 +183,13 @@ let clock = new THREE.Clock();
 let previousTime = Date.now();
 //let elapsedTime = 1;
 
+let time = {timeScale : 1}
+
 function animate() {
   //elapsedTime = clock.getElapsedTime() + 1;
   //delta = clock.getDelta();
   const currentTime = Date.now();
-  const deltaTime = (currentTime - previousTime) / 1000;
+  const deltaTime = (currentTime - previousTime) / (1000 / time.timeScale);
   previousTime = currentTime;
 
   satellites.forEach(element => {
@@ -201,5 +203,6 @@ function animate() {
   controls.update();
   renderer.render(scene, camera);
 }
+gui.add(time, 'timeScale').min(0).max(5).step(0.2).name("Time Scale")
 
 animate();
