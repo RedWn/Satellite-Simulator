@@ -187,19 +187,37 @@ let previousTime = Date.now();
 
 let time = {timeScale : 1}
 
+const distanceVector = new Vector3();
 function animate() {
   //elapsedTime = clock.getElapsedTime() + 1;
   //delta = clock.getDelta();
   const currentTime = Date.now();
-  const deltaTime = (currentTime - previousTime) / (1000 / time.timeScale);
+  const deltaTime = (currentTime - previousTime) * time.timeScale;
   previousTime = currentTime;
 
-  satellites.forEach(element => {
+  //collision detection betweeen satallites
+  //delete collided satellites
+  for (let i = 0; i < satellites.length; i++) {
+    const element = satellites[i];
     if(element.visible)
-      applyGravity(element, deltaTime * 1e3);
-  });
-  
-
+      applyGravity(element, deltaTime);
+    if(satellites.length > 1){
+      for (let j = i; j < satellites.length; j++) {
+        if(i != j){
+          const element2 = satellites[j];
+          distanceVector.subVectors(element.position, element2.position)
+          const distance = distanceVector.lengthSq()
+          if(distance < 810000000000){
+            scene.remove(element, element2);
+            satellites.splice(i, 1)
+            satellites.splice(j, 1)
+            element.visible = false;
+            element2.visible = false;
+          }
+        }
+      }
+    }
+  }
   earth.rotateY(0.004);
   requestAnimationFrame(animate);
   controls.update();
