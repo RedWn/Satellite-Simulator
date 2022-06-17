@@ -33,7 +33,7 @@ const satellite = new THREE.Object3D();
 gltfLoader.load("./assets/sputnik.gltf", (gltf) => {
   satellite.add(gltf.scene);
   // gltf.scene.position.y = -40;
-  satellite.scale.multiplyScalar(1e5);
+  satellite.scale.multiplyScalar(1e5 * 2);
 
 });
 // satellite.position.set(0, 6.378e7, 0)
@@ -94,9 +94,8 @@ renderer.render(scene, camera);
 
 //Lights
 const pointLight = new THREE.PointLight(0xffffff);
-const ambientLight = new THREE.AmbientLight(0x444444);
+const ambientLight = new THREE.AmbientLight(0x555555);
 pointLight.position.set(EARTH_RADIUS * 3, 0, 0);
-//pointLight.power(1);
 scene.add(ambientLight);
 scene.add(pointLight);
 
@@ -130,11 +129,12 @@ function applyGravity(satellite) {
 
 const DF = new Vector3();
 function dragForce(satellite) {
-  const DForce = 0.5 * 1e-3 * satelliteV.lengthSq() * 0.47 * 2 * Math.PI * satellite.raduis * satellite.raduis;
+  const DForce = 0.5 * 1e-3 * satelliteV.lengthSq() * 0.47 * Math.PI * 1;
   const temp = new Vector3();
-  temp.copy(satelliteV).normalize().multiplyScalar(-1);
+  temp.copy(satelliteA).normalize().multiplyScalar(-1);
   DF.copy(temp).multiplyScalar(DForce);
 }
+
 // function height(){
 //   let h = EARTH_RADIUS * (1 - ( Math.cos(360/EARTH_CIRCUMFERENCE * displacement.length) ));
 // }
@@ -165,8 +165,8 @@ function animate() {
   applyGravity(satellite);
 
   if (satellite.visible) {
-    if ((satellite.position.lengthSq() < EARTH_RADIUS_SQ * 1.1)) {
-      // dragForce(satellite);
+    if ((satellite.position.lengthSq() < EARTH_RADIUS_SQ * 1.2)) {
+      dragForce(satellite);
       console.log("Hi");
     }
     const tempV = new Vector3();
