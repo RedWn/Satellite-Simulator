@@ -46,6 +46,8 @@ gltfLoader.load("./assets/satellite.gltf", (gltf) => {
   satellite.add(gltf.scene);
   gltf.scene.position.y = -40;
   satellite.scale.multiplyScalar(1e4);
+
+  //this one is at height 5,454 km from surface of earth
   satellite.position.set(
     EARTH_RADIUS * 1.2,
     EARTH_RADIUS + 1e3,
@@ -61,21 +63,21 @@ satellites.push(satellite);
 const satelliteFolder = gui.addFolder("satellite position");
 satelliteFolder
   .add(satellite.position, "x")
-  .min(-7653600)
-  .max(7653600)
-  .step(10)
+  .min(-20000000)
+  .max(20000000)
+  .step(100)
   .name("                       x");
 satelliteFolder
   .add(satellite.position, "y")
-  .min(-7653600)
-  .max(7653600)
-  .step(10)
+  .min(-20000000)
+  .max(20000000)
+  .step(100)
   .name("                       y");
 satelliteFolder
   .add(satellite.position, "z")
-  .min(-7653600)
-  .max(7653600)
-  .step(10)
+  .min(-20000000)
+  .max(20000000)
+  .step(100)
   .name("                       z");
 
 const AddSatelliteFolder = gui.addFolder("Add Satellite");
@@ -83,9 +85,11 @@ const AddSatelliteFolder = gui.addFolder("Add Satellite");
 let satelliteGuiValues = {};
 
 const satGui = {
-  x: 7653600,
-  y: 7653600,
-  z: 7653600,
+  x: 8500000,
+  y: 8500000,
+  z: 8500000,     
+  //at pos (8.5 million, 8.5 million, 8.5 million) the height
+  // of satellite will be 8,351 km from surface of earth
   SaveSatellite() {
     // save current values to an object
     satelliteGuiValues = gui.save();
@@ -98,27 +102,28 @@ const satGui = {
       satellite.add(gltf.scene);
       gltf.scene.position.y = -40; //TODO: ask hamsho if this line is important
       satellite.scale.multiplyScalar(1e4 + 30000); //TODO delete 30000 later
-      //satellite.lookAt(earth.position);           is not working (dunno why)
+      //satellite.lookAt(earth.position);          // is not working (dunno why)
       satellite.position.set(this.x, this.y, this.z);
     });
     scene.add(satellite);
     satellites.push(satellite);
   },
 };
+//at pos (20 million, 20 million, 20 million) the height of satellite will be 28,270 km
 AddSatelliteFolder.add(satGui, "x")
-  .min(-7653600)
-  .max(7653600)
-  .step(10)
+  .min(-20000000)
+  .max(20000000)
+  .step(100)
   .name("                       x");
 AddSatelliteFolder.add(satGui, "y")
-  .min(-7653600)
-  .max(7653600)
-  .step(10)
+  .min(-20000000)
+  .max(20000000)
+  .step(100)
   .name("                       y");
 AddSatelliteFolder.add(satGui, "z")
-  .min(-7653600)
-  .max(7653600)
-  .step(10)
+  .min(-20000000)
+  .max(20000000)
+  .step(100)
   .name("                       z");
 AddSatelliteFolder.add(satGui, "SaveSatellite");
 const loadButton = AddSatelliteFolder.add(satGui, "AddSatellite").disable();
@@ -220,6 +225,7 @@ function applyGravity(satellite, deltaTime) {
   // function height(){
   //   let h = EARTH_RADIUS * (1 - ( Math.cos(360/EARTH_CIRCUMFERENCE * displacement.length()) ));
   // }
+
 }
 
 let clock = new THREE.Clock();
@@ -265,6 +271,6 @@ function animate() {
   controls.update();
   renderer.render(scene, camera);
 }
-gui.add(time, "timeScale").min(0).max(5).step(0.2).name("Time Scale");
+gui.add(time, "timeScale").min(0).max(10).step(0.1).name("Time Scale");
 
 animate();
