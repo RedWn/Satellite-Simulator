@@ -8,6 +8,10 @@ import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { EARTH_CIRCUMFERENCE, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT } from "./Constants.js";
+import GUI from "lil-gui";
+
+const gui = new GUI();
+
 
 const scene = new THREE.Scene();
 
@@ -39,6 +43,43 @@ gltfLoader.load("./assets/sputnik.gltf", (gltf) => {
 // satellite.position.set(0, 6.378e7, 0)
 satellite.position.set(0, EARTH_RADIUS * 1.5, 0);
 scene.add(satellite);
+
+
+
+
+const satelliteFolder = gui.addFolder("satellite position");
+satelliteFolder
+  .add(satellite.position, "x")
+  .min(-20000000)
+  .max(20000000)
+  .step(100)
+  .name("                       x");
+satelliteFolder
+  .add(satellite.position, "y")
+  .min(-20000000)
+  .max(20000000)
+  .step(100)
+  .name("                       y");
+satelliteFolder
+  .add(satellite.position, "z")
+  .min(-20000000)
+  .max(20000000)
+  .step(100)
+  .name("                       z");
+
+  const editSpeedGui = {
+    W(){
+      const temp = new Vector3();
+      initSpeed(satellite, temp.copy(satelliteV).normalize(), 1000);
+    },
+    S(){
+      const temp = new Vector3();
+      initSpeed(satellite, temp.copy(satelliteV).normalize().multiplyScalar(-1), 1000);
+    }
+  }
+  gui.add(editSpeedGui, "W");
+  gui.add(editSpeedGui, "S");
+
 
 //Background
 const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -157,9 +198,11 @@ let previousTime = Date.now();
 
 initSpeed(satellite, new Vector3(1, 0, 0).normalize(), 20000);
 
+let time = { timeScale: 1 };
+
 function animate() {
   const currentTime = Date.now();
-  const deltaTime = (currentTime - previousTime) / 10;
+  const deltaTime = (currentTime - previousTime) * time.timeScale / 10;
   previousTime = currentTime;
 
   applyGravity(satellite);
@@ -187,5 +230,8 @@ function animate() {
   controls.update();
   renderer.render(scene, camera);
 }
+
+
+gui.add(time, "timeScale").min(0).max(20).step(0.1).name("Time Scale");
 
 animate();
