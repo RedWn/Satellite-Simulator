@@ -60,34 +60,43 @@ scene.add(satellite);
 var satellites = new Array();
 satellites.push(satellite);
 
-const satelliteFolder = gui.addFolder("satellite position");
+const satellitesFolder = gui.addFolder("satellites");
+const satelliteFolder = satellitesFolder.addFolder(
+  "satellite " + satellites.length
+);
+
 satelliteFolder
   .add(satellite.position, "x")
   .min(-20000000)
   .max(20000000)
   .step(100)
+  .listen(true)
   .name("                       x");
 satelliteFolder
   .add(satellite.position, "y")
   .min(-20000000)
   .max(20000000)
+  .listen(true)
   .step(100)
   .name("                       y");
 satelliteFolder
   .add(satellite.position, "z")
   .min(-20000000)
   .max(20000000)
+  .listen(true)
   .step(100)
   .name("                       z");
 
 const AddSatelliteFolder = gui.addFolder("Add Satellite");
 
 let satelliteGuiValues = {};
+let satelliteFolders = new Array();
+satelliteFolders.push(satelliteFolder);
 
 const satGui = {
   x: 8500000,
   y: 8500000,
-  z: 8500000,     
+  z: 8500000,
   //at pos (8.5 million, 8.5 million, 8.5 million) the height
   // of satellite will be 8,351 km from surface of earth
   SaveSatellite() {
@@ -107,6 +116,30 @@ const satGui = {
     });
     scene.add(satellite);
     satellites.push(satellite);
+
+    let satelliteFolder = satellitesFolder.addFolder(
+      "satellite " + satellites.length
+    );
+    satelliteFolders.push(satelliteFolder);
+
+    satelliteFolder
+      .add(satellite.position, "x")
+      .min(-20000000)
+      .max(20000000)
+      .step(100)
+      .name("                       x");
+    satelliteFolder
+      .add(satellite.position, "y")
+      .min(-20000000)
+      .max(20000000)
+      .step(100)
+      .name("                       y");
+    satelliteFolder
+      .add(satellite.position, "z")
+      .min(-20000000)
+      .max(20000000)
+      .step(100)
+      .name("                       z");
   },
 };
 //at pos (20 million, 20 million, 20 million) the height of satellite will be 28,270 km
@@ -114,16 +147,19 @@ AddSatelliteFolder.add(satGui, "x")
   .min(-20000000)
   .max(20000000)
   .step(100)
+  .listen(true)
   .name("                       x");
 AddSatelliteFolder.add(satGui, "y")
   .min(-20000000)
   .max(20000000)
   .step(100)
+  .listen(true)
   .name("                       y");
 AddSatelliteFolder.add(satGui, "z")
   .min(-20000000)
   .max(20000000)
   .step(100)
+  .listen(true)
   .name("                       z");
 AddSatelliteFolder.add(satGui, "SaveSatellite");
 const loadButton = AddSatelliteFolder.add(satGui, "AddSatellite").disable();
@@ -194,12 +230,16 @@ const gravity = new Vector3();
 const deltaVelocity = new Vector3();
 const displacement = new Vector3();
 
+const h = { height: 0 };
+let distanceSq;
+var index = 0;
+
 /**
  * @param {number} [deltaTime]
  */
 function applyGravity(satellite, deltaTime) {
   gravity.subVectors(earth.position, satellite.position);
-  const distanceSq = gravity.lengthSq();
+  distanceSq = gravity.lengthSq();
   const gravityForce = (GRAVITY_CONSTANT * EARTH_MASS) / distanceSq;
   gravity.normalize().multiplyScalar(gravityForce);
 
@@ -208,25 +248,24 @@ function applyGravity(satellite, deltaTime) {
   displacement.copy(deltaVelocity).multiplyScalar(deltaTime);
   satellite.position.add(displacement);
 
+  index = satellites.indexOf(satellite);
+
   //collision detection with Earth
   //delete collided satellite
   if (satellite.position.lengthSq() < EARTH_RADIUS_SQ) {
-    const index = satellites.indexOf(satellite);
     if (index > -1) {
       satellites.splice(index, 1);
       scene.remove(satellite);
       satellite.visible = false;
+      satelliteFolders[index].destroy();
     }
   }
 
   //calculate height of satellite from surface of earth
-  let height = Math.sqrt(distanceSq) - EARTH_RADIUS;
-
-  // function height(){
-  //   let h = EARTH_RADIUS * (1 - ( Math.cos(360/EARTH_CIRCUMFERENCE * displacement.length()) ));
-  // }
-
+  h.height = Math.sqrt(distanceSq) - EARTH_RADIUS;
 }
+
+satelliteFolders[index].add(h, "height").min(0).max(10000000).listen(true);
 
 let clock = new THREE.Clock();
 let previousTime = Date.now();
@@ -260,17 +299,20 @@ function animate() {
             satellites.splice(j, 1);
             element.visible = false;
             element2.visible = false;
+            satelliteFolders[i].destroy();
+            satelliteFolders[j].destroy();
           }
         }
       }
     }
   }
 
-  earth.rotateY(0.004);
+  earth.rotateY(1.2120351080246913580246913580247e-6 * time.timeScale);
+
   requestAnimationFrame(animate);
   controls.update();
   renderer.render(scene, camera);
 }
-gui.add(time, "timeScale").min(0).max(10).step(0.1).name("Time Scale");
+gui.add(time, "timeScale").min(0).max(100).step(0.1).name("Time Scale");
 
 animate();
