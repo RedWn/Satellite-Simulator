@@ -8,7 +8,7 @@ import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { AREA, DRAG_COEFFICIENT, EARTH_CIRCUMFERENCE, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT, VOLUMEETRIC_DENSITY } from "./Constants.js";
-// @ts-ignore
+
 import GUI from "lil-gui";
 
 const gui = new GUI();
