@@ -7,7 +7,7 @@ import { Vector3 } from "three";
 import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { EARTH_CIRCUMFERENCE, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT } from "./Constants.js";
+import { AREA, DRAG_COEFFICIENT, EARTH_CIRCUMFERENCE, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT, VOLUMEETRIC_DENSITY } from "./Constants.js";
 
 const scene = new THREE.Scene();
 
@@ -15,11 +15,11 @@ scene.add(new THREE.AxesHelper(EARTH_RADIUS / 10));
 
 const textureLoader = new THREE.TextureLoader();
 
-// Earth
+// Earth         
 const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
 const material = new THREE.MeshStandardMaterial({
   map: textureLoader.load(earthTexture),
-  // wireframe: true,
+  // wireframe: true, 
 });
 
 const earth = new THREE.Mesh(geometry, material);
@@ -129,7 +129,8 @@ function applyGravity(satellite) {
 
 const DF = new Vector3();
 function dragForce(satellite) {
-  const DForce = 0.5 * 1e-3 * satelliteV.lengthSq() * 0.47 * Math.PI * 1;
+  const DForce = 0.5 *VOLUMEETRIC_DENSITY*AREA* satelliteV.lengthSq() * DRAG_COEFFICIENT ;// Tareq Drag Force equation
+  //const DForce = 0.5 * 1e-3 * satelliteV.lengthSq() * 0.47 * Math.PI * 1;
   const temp = new Vector3();
   temp.copy(satelliteA).normalize().multiplyScalar(-1);
   DF.copy(temp).multiplyScalar(DForce);

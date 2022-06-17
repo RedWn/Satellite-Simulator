@@ -9,3 +9,11 @@ export const GRAVITY_CONSTANT = 6.6743e-11;
 export const EARTH_CIRCUMFERENCE = 2 * Math.PI * EARTH_RADIUS;
 
 
+//Fd=1/2 p*v^2*Cd
+export const VOLUMEETRIC_DENSITY=1.293;//p
+
+export const AREA=20.015086796021;//A
+
+export const DRAG_COEFFICIENT=0.47;//Cd
+
+
