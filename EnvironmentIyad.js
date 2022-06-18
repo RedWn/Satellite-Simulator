@@ -1,10 +1,7 @@
 import * as THREE from "three";
 
 import {
-  EARTH_MASS,
   EARTH_RADIUS,
-  EARTH_RADIUS_SQ,
-  GRAVITY_CONSTANT,
   MOON_RADIUS,
   MOON_TO_EARTH,
   SUN_RADIUS,
@@ -18,7 +15,6 @@ import starsTexture from "./assets/stars.jpg";
 
 const textureLoader = new THREE.TextureLoader();
 
-// Earth
 export function earthFunc(scene) {
   const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
   const material = new THREE.MeshBasicMaterial({
@@ -31,7 +27,6 @@ export function earthFunc(scene) {
   return earth;
 }
 
-// MOON
 export function moonFunc(scene) {
   const geometry1 = new THREE.SphereGeometry(MOON_RADIUS, 64, 64);
   const material1 = new THREE.MeshBasicMaterial({
@@ -44,7 +39,6 @@ export function moonFunc(scene) {
   return moon;
 }
 
-// SUN
 export function sunFunc(scene) {
   const geometry2 = new THREE.SphereGeometry(SUN_RADIUS, 64, 64);
   const material2 = new THREE.MeshBasicMaterial({
@@ -58,7 +52,6 @@ export function sunFunc(scene) {
 }
 
 export function misc(scene, camera, renderer, sizes) {
-  //Background
   const cubeTextureLoader = new THREE.CubeTextureLoader();
   scene.background = cubeTextureLoader.load([
     starsTexture,
@@ -84,11 +77,13 @@ export function misc(scene, camera, renderer, sizes) {
   });
 }
 
-//Lights
 export function lights(scene, sun) {
   const pointLight = new THREE.PointLight(0xffffff);
-  const ambientLight = new THREE.AmbientLight(0x444444);
-  pointLight.position.set(sun.position.x, sun.position.y, sun.position.z);
+  const ambientLight = new THREE.AmbientLight(0x444444);  //
+  //const ambientLight = new THREE.AmbientLight(0x555555);//CHOOSE
+
+  pointLight.position.set(sun.position.x, sun.position.y, sun.position.z);//
+  pointLight.position.set(EARTH_RADIUS * 3, 0, 0);                        //CHOOSE
   scene.add(ambientLight);
   scene.add(pointLight);
   pointLight.power;

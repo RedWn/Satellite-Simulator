@@ -3,13 +3,7 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import starsTexture from "./assets/stars.jpg";
-import earthTexture from "./assets/earth.jpg";
 import { AREA, DRAG_COEFFICIENT, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT, VOLUMEETRIC_DENSITY } from "./Constants";
-
-import GUI from "lil-gui";
-
-const gui = new GUI();
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Object3D, Vector3 } from "three";
 import { cameraFunc, earthFunc, lights, misc, moonFunc, rendererFunc, sunFunc } from "./EnvironmentIyad";
@@ -34,8 +28,7 @@ function calculate_height(V) {
 
 let time = { timeScale: 1 };
 
-
-const satellitesFolders = guiFunc(satellites, time);
+guiFunc(satellites, time);
 
 export function addSatellite(pos, m, r, s) {
   console.log("HI");
@@ -93,13 +86,6 @@ misc(scene, camera, renderer, sizes);
 lights(scene, sun);
 
 renderer.render(scene, camera);
-
-//Lights
-const pointLight = new THREE.PointLight(0xffffff);
-const ambientLight = new THREE.AmbientLight(0x555555);
-pointLight.position.set(EARTH_RADIUS * 3, 0, 0);
-scene.add(ambientLight);
-scene.add(pointLight);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -215,7 +201,6 @@ function animate() {
       satellite.V.add(tempV2);
 
       satellite.X.copy(satellite.V).multiplyScalar(deltaTime);
-      // console.log(satellite.X);
       satellite.object.position.add(satellite.X);
 
       drawVector(satellite, satellite.V, 0);
@@ -260,10 +245,4 @@ function animate() {
   controls.update();
   renderer.render(scene, camera);
 }
-//gui satellite height
-// if (satellitesFolders.length >= 1)
-//   satellitesFolders[0].add(h, "height").min(0).max(10000000).listen(true);
-
-gui.add(time, "timeScale").min(0).max(20).step(0.1).name("Time Scale");
-
 animate();

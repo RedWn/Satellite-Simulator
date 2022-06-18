@@ -19,7 +19,9 @@ function satelliteFolderFunc(allSatellitesFolder, satellites) {
 }
 
 export function guiFunc(satellites, time) {
+
   const gui = new GUI({ width: 320 });
+
   gui.add(time, "timeScale").min(0).max(100).step(0.1).name("Time Scale");
 
   const allSatellitesFolder = gui.addFolder("All Satellites");
@@ -29,7 +31,7 @@ export function guiFunc(satellites, time) {
   let satelliteGuiValues = {};
 
   const satGui = {
-    x: 0, y: 0, z: 0, mass: 10, radius: 1, speed: 7000,
+    x: 7000000, y: 7000000, z: 7000000, mass: 10, radius: 1, speed: 7000,
     //at pos (8.5 million, 8.5 million, 8.5 million) the height
     // of satellite will be 8,351 km from surface of earth
     SaveSatellite() {
