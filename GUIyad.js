@@ -15,7 +15,7 @@ function satelliteFolderFunc(allSatellitesFolder, satellites){
 }
 
 export function guiFunc(satellites, time) {
-  const gui = new GUI();
+  const gui = new GUI({ width: 320 });
   gui.add(time, "timeScale").min(0).max(100).step(0.1).name("Time Scale");
 
   const allSatellitesFolder = gui.addFolder("All Satellites");
