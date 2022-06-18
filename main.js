@@ -221,6 +221,7 @@ function dragForce(satellite) {
 }
 function calculate_height(satellite){
 let height = ((satellite.position.length()) - EARTH_RADIUS);
+console.log(height);
 return height;
 }
 
