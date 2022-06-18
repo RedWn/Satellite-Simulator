@@ -67,7 +67,7 @@ export function addSatellite(pos, m, r, s) {
   scene.add(arrowHelper1);
   satellite.arrows.push(arrowHelper1);
 
-  const arrowHelper2 = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0x0000ff);
+  const arrowHelper2 = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0x00ff00);
   scene.add(arrowHelper2);
   satellite.arrows.push(arrowHelper2);
 }
@@ -125,7 +125,7 @@ function drawVector(satellite, V, i) {
   satellite.arrows[i].position.set(newSourcePos.x, newSourcePos.y, newSourcePos.z);
   const direction = new THREE.Vector3().copy(newTargetPos);
   satellite.arrows[i].setDirection(direction.normalize());
-  satellite.arrows[i].setLength(temp.length() * 1e6);
+  satellite.arrows[i].setLength(V.length() * 1e6);
 }
 
 const gravity = new Vector3();
@@ -203,7 +203,7 @@ function animate() {
       satellite.X.copy(satellite.V).multiplyScalar(deltaTime);
       satellite.object.position.add(satellite.X);
 
-      drawVector(satellite, satellite.V, 0);
+      drawVector(satellite, new Vector3().copy(satellite.V).normalize(), 0);
       drawVector(satellite, gravity, 1);
       drawVector(satellite, DA, 2);
       drawTrail(satellite, satellite.V);
