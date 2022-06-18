@@ -205,8 +205,13 @@ function drawTrail(satellite, V) {
   const direction = new THREE.Vector3().copy(newTargetPos);
   arrowHelper.setDirection(direction.normalize());
   arrowHelper.setLength(temp.length() * 1e4);
+
+  setTimeout(removeTrail, 7e4, arrowHelper);
 }
 
+function removeTrail(arrowHelper) {
+  scene.remove(arrowHelper);
+}
 
 function drawVector(satellite, V, i) {
 
