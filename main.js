@@ -221,8 +221,7 @@ function dragForce(satellite) {
   DA.divideScalar(satelliteMass);
 }
 function calculate_height(satellite) {
-  let height = (satellite.position.length()) - EARTH_RADIUS;
-  // console.log(height);
+  let height = ((satellite.position.length()) - EARTH_RADIUS);
   return height;
 }
 
@@ -280,6 +279,9 @@ function animate() {
 
   earth.rotateY(0.004);
   requestAnimationFrame(animate);
+  //
+  // calculate_height(satellite);
+  //
   controls.update();
   renderer.render(scene, camera);
 }
