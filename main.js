@@ -255,7 +255,6 @@ function animate() {
   if (satellite.visible) {
     if (calculate_height(satellite) < 6e5) {
       dragForce(satellite);
-      drawVector(DA, 2);
       console.log("Hi");
     }
     const tempV = new Vector3();
@@ -273,6 +272,7 @@ function animate() {
     // drawVector(gravity);
     drawVector(satelliteV, 0);
     drawVector(gravity, 1);
+    drawVector(DA, 2);
     drawTrail(satelliteV);
     // console.log(satelliteV);
   }
