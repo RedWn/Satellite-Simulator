@@ -34,7 +34,7 @@ export function addSatellite(pos, m, r, s) {
   console.log("HI");
   let satellite = {
     object: new Object3D(),
-    X: new Vector3(0, 0, 0),
+    displacement: new Vector3(0, 0, 0),
     V: new Vector3(0, 0, 0),
     arrows: new Array(),
     height: 0,
@@ -203,8 +203,8 @@ function animate() {
       tempV2.copy(DA).multiplyScalar(deltaTime);
       satellite.V.add(tempV2);
 
-      satellite.X.copy(satellite.V).multiplyScalar(deltaTime);
-      satellite.object.position.add(satellite.X);
+      satellite.displacement.copy(satellite.V).multiplyScalar(deltaTime);
+      satellite.object.position.add(satellite.displacement);
 
       drawVector(satellite, new Vector3().copy(satellite.V).normalize(), 0);
       drawVector(satellite, gravity, 1);
