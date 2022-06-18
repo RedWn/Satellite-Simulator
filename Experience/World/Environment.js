@@ -1,6 +1,6 @@
 import Experience from "../Experience";
 import * as THREE from "three";
-import starsTexture from '../assets/stars.jpg'
+import starsTexture from './assets/stars.jpg'
 
 export default class Environment {
   constructor() {

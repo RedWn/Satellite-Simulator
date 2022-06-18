@@ -1,6 +1,6 @@
 import Experience from "../Experience";
 import Environment from "./Environment";
-import earthTexture from '../assets/earth.jpg'
+import earthTexture from './assets/earth.jpg'
 import { EARTH_RADIUS } from "../Constants";
 import * as THREE from "three";
 import Satellite from "./Satellite";

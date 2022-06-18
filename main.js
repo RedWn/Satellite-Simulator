@@ -8,12 +8,18 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
+import sunTexture from "./assets/sun.png";
+import moonTexture from "./assets/moon.jpg";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import {
   EARTH_MASS,
   EARTH_RADIUS,
   EARTH_RADIUS_SQ,
   GRAVITY_CONSTANT,
+  MOON_RADIUS,
+  MOON_TO_EARTH,
+  SUN_RADIUS,
+  SUN_TO_EARTH
 } from "./Experience/Constants";
 import GUI from "lil-gui";
 import { Vector3 } from "three";
@@ -30,12 +36,32 @@ const textureLoader = new THREE.TextureLoader();
 const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
 const material = new THREE.MeshBasicMaterial({
   map: textureLoader.load(earthTexture),
-  wireframe: true,
+  wireframe: false,
 });
 
 const earth = new THREE.Mesh(geometry, material);
 scene.add(earth);
 earth.position.set(0, 0, 0);
+
+// MOON
+const geometry1 = new THREE.SphereGeometry(MOON_RADIUS, 64, 64);
+const material1 = new THREE.MeshBasicMaterial({
+  map: textureLoader.load(moonTexture),
+  wireframe: false,
+});
+const moon = new THREE.Mesh(geometry1, material1);
+scene.add(moon);
+moon.position.set(MOON_TO_EARTH, MOON_TO_EARTH, MOON_TO_EARTH);
+
+// SUN
+const geometry2 = new THREE.SphereGeometry(SUN_RADIUS, 64, 64);
+const material2 = new THREE.MeshBasicMaterial({
+  map: textureLoader.load(sunTexture),
+  wireframe: false,
+});
+const sun = new THREE.Mesh(geometry2, material2);
+scene.add(sun);
+sun.position.set(SUN_TO_EARTH, SUN_TO_EARTH, SUN_TO_EARTH);
 
 // Models
 const gltfLoader = new GLTFLoader();
@@ -109,9 +135,8 @@ const satGui = {
     let satellite = new THREE.Object3D();
     gltfLoader.load("./assets/satellite.gltf", (gltf) => {
       satellite.add(gltf.scene);
-      gltf.scene.position.y = -40; //TODO: ask hamsho if this line is important
       satellite.scale.multiplyScalar(1e4 + 30000); //TODO delete 30000 later
-      //satellite.lookAt(earth.position);          // is not working (dunno why)
+      satellite.lookAt(earth.position);           //is not working (dunno why)
       satellite.position.set(this.x, this.y, this.z);
     });
     scene.add(satellite);
@@ -199,10 +224,11 @@ const camera = new THREE.PerspectiveCamera(
   75,
   sizes.width / sizes.height,
   0.1,
-  1e9
+  1e13
 );
 
 camera.position.z = EARTH_RADIUS * 2;
+camera.lookAt(sun.position);
 /**
  * Renderer
  */
@@ -219,11 +245,10 @@ renderer.render(scene, camera);
 //Lights
 const pointLight = new THREE.PointLight(0xffffff);
 const ambientLight = new THREE.AmbientLight(0x444444);
-pointLight.position.set(5, 5, 5);
-//pointLight.power(1);
+pointLight.position.set(sun.position.x, sun.position.y,sun.position.z);
 scene.add(ambientLight);
 scene.add(pointLight);
-
+pointLight.power;
 const controls = new OrbitControls(camera, renderer.domElement);
 
 const gravity = new Vector3();
