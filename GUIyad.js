@@ -9,12 +9,12 @@ function satelliteFolderFunc(allSatellitesFolder, satellites) {
     "satellite no. " + (satellites.length - 1)
   );
 
-  satelliteFolder.add(satellites[satellites.length - 1].position, "x").min(-20000000).max(20000000).listen(true).step(100).name("                x");
-  satelliteFolder.add(satellites[satellites.length - 1].position, "y").min(-20000000).max(20000000).listen(true).step(100).name("                y");
-  satelliteFolder.add(satellites[satellites.length - 1].position, "z").min(-20000000).max(20000000).listen(true).step(100).name("                z");
-  satelliteFolder.add(satellites[satellites.length - 1].position, "M").min(0).max(5000).step(5).listen(true).name("             mass");
-  satelliteFolder.add(satellites[satellites.length - 1].position, "r").min(0).max(20).step(1).listen(true).name("            radius");
-  satelliteFolder.add(satellites[satellites.length - 1].position, "speed").min(0).max(100000).step(10).listen(true).name("            speed");
+  satelliteFolder.add(satellites[satellites.length - 1].object.position, "x").min(-20000000).max(20000000).listen(true).step(100).name("                x");
+  satelliteFolder.add(satellites[satellites.length - 1].object.position, "y").min(-20000000).max(20000000).listen(true).step(100).name("                y");
+  satelliteFolder.add(satellites[satellites.length - 1].object.position, "z").min(-20000000).max(20000000).listen(true).step(100).name("                z");
+  satelliteFolder.add(satellites[satellites.length - 1], "mass").min(0).max(5000).step(5).listen(true).name("             mass");
+  satelliteFolder.add(satellites[satellites.length - 1], "radius").min(0).max(20).step(1).listen(true).name("            radius");
+  //satelliteFolder.add(satellites[satellites.length - 1], "speed").min(0).max(100000).step(10).listen(true).name("            speed");
   return satelliteFolder;
 }
 

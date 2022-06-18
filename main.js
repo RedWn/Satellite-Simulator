@@ -257,11 +257,11 @@ function animate() {
   });
 
   for (let i = 0; i < satellites.length; i++) {
-    const element = satellites[i];
+    const element = satellites[i].object;
     if (satellites.length > 1) {
       for (let j = i; j < satellites.length; j++) {
         if (i != j) {
-          const element2 = satellites[j];
+          const element2 = satellites[j].object;
           distanceVector.subVectors(element.position, element2.position);
           const distance = distanceVector.lengthSq();
           if (distance < 810000000000) {
