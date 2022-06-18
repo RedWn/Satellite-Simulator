@@ -24,15 +24,6 @@ const earth = earthFunc(scene);
 const moon = moonFunc(scene);
 const sun = sunFunc(scene);
 
-// const textureLoader = new THREE.TextureLoader();
-
-// // Earth         
-// const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
-// const material = new THREE.MeshStandardMaterial({
-//   map: textureLoader.load(earthTexture),
-//   // wireframe: true, 
-// });
-
 const gltfLoader = new GLTFLoader();
 var satellites = new Array();
 
@@ -66,7 +57,6 @@ export function addSatellite(pos, m, r, s) {
 
   gltfLoader.load("./assets/sputnik.gltf", (gltf) => {
     satellite.object.add(gltf.scene);
-    // gltf.scene.position.y = -40;
     satellite.object.scale.multiplyScalar(1e5 * 2);
 
   });
@@ -88,24 +78,6 @@ export function addSatellite(pos, m, r, s) {
   scene.add(arrowHelper2);
   satellite.arrows.push(arrowHelper2);
 }
-
-// addSatellite(new Vector3(EARTH_RADIUS * 1.25, 0, 0), 10, 1, 7000);
-
-// export function addSat(x, y, z) {
-//   const gltfLoader = new GLTFLoader();
-//   const satellite = new THREE.Object3D();
-
-//   gltfLoader.load("./assets/satellite.gltf", (gltf) => {
-//     satellite.add(gltf.scene);
-//     gltf.scene.position.y = -40;
-//     satellite.scale.multiplyScalar(1e4);
-
-//     //this one is at height 5,454 km from surface of earth
-//     satellite.position.set(x, y, z);
-//   });
-//   scene.add(satellite);
-//   satellites.push(satellite);
-// }
 
 const sizes = {
   width: window.innerWidth,
@@ -133,7 +105,6 @@ const controls = new OrbitControls(camera, renderer.domElement);
 
 function initSpeed(satellite, vec, V) {
   satellite.V.add(vec.multiplyScalar(V));
-  // console.log(satelliteV);                             
 }
 
 function drawTrail(satellite, V) {
@@ -210,14 +181,10 @@ document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
   var keyCode = event.which;
   if (keyCode == 87) {//W
-    // const temp = new Vector3();
-    // initSpeed(satellite, temp.copy(satelliteV).normalize(), 1000);
 
     addSatellite(new Vector3(0, 8000000, 0), 1000, 1, 7000);
   }
   if (keyCode == 83) {//S
-    // const temp = new Vector3();
-    // initSpeed(satellite, temp.copy(satelliteV).normalize().multiplyScalar(-1), 1000);
   }
 
 };
@@ -232,7 +199,6 @@ function animate() {
   previousTime = currentTime;
 
   satellites.forEach(satellite => {
-    // console.log("HI");
     applyGravity(satellite);
 
     if (satellite.object.visible) {
@@ -271,13 +237,13 @@ function animate() {
           if (distance < 810000000000) {
             scene.remove(element, element2);
             let i2 = satellites.indexOf(element);
-            console.log("i2 "+i2);
+            console.log("i2 " + i2);
             destroyFolder(i2);
-            
+
             let j2 = satellites.indexOf(element2);
-            console.log("j2 "+j2);
+            console.log("j2 " + j2);
             destroyFolder(j2);
-            
+
             satellites.splice(i, 1);
             satellites.splice(j, 1);
             element.visible = false;
@@ -291,9 +257,6 @@ function animate() {
   earth.rotateY(1.2120351080246913580246913580247e-6 * time.timeScale);
 
   requestAnimationFrame(animate);
-  //
-  // calculate_height(satellite);
-  //
   controls.update();
   renderer.render(scene, camera);
 }
