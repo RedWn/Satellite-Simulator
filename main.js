@@ -43,7 +43,7 @@ function calculate_height(V) {
 
 let time = { timeScale: 1 };
 
-
+const satellitesFolders = guiFunc(satellites, time);
 
 export function addSatellite(pos, m, r, s) {
   console.log("HI");
@@ -172,7 +172,6 @@ function drawVector(satellite, V, i) {
 
 const gravity = new Vector3();
 
-let satellitesFolders = guiFunc(satellites, time);
 
 function applyGravity(satellite) {
   gravity.subVectors(earth.position, satellite.object.position);
