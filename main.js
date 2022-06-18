@@ -3,41 +3,35 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { Vector3 } from "three";
-import { Object3D } from "three";
 import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { AREA, DRAG_COEFFICIENT, EARTH_CIRCUMFERENCE, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT, VOLUMEETRIC_DENSITY } from "./Constants.js";
+import { AREA, DRAG_COEFFICIENT, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT, VOLUMEETRIC_DENSITY } from "./Experience/Constants";
 
 import GUI from "lil-gui";
 
 const gui = new GUI();
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { Object3D, Vector3 } from "three";
+import { cameraFunc, earthFunc, lights, misc, moonFunc, rendererFunc, sunFunc } from "./EnvironmentIyad";
+import { destroyFolder, guiFunc } from "./GUIyad";
 
 
 const scene = new THREE.Scene();
 
 scene.add(new THREE.AxesHelper(EARTH_RADIUS / 10));
 
-const textureLoader = new THREE.TextureLoader();
+const earth = earthFunc(scene);
+const moon = moonFunc(scene);
+const sun = sunFunc(scene);
 
-// Earth         
-const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
-const material = new THREE.MeshStandardMaterial({
-  map: textureLoader.load(earthTexture),
-  // wireframe: true, 
-});
+// const textureLoader = new THREE.TextureLoader();
 
-const earth = new THREE.Mesh(geometry, material);
-scene.add(earth);
-earth.position.set(0, 0, 0);
-
-
-
-
-// satsArray[0].pos.x = 1
-// console.log(satsArray[0].pos.x)
-
+// // Earth         
+// const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
+// const material = new THREE.MeshStandardMaterial({
+//   map: textureLoader.load(earthTexture),
+//   // wireframe: true, 
+// });
 
 const gltfLoader = new GLTFLoader();
 let satellites = new Array();
@@ -90,90 +84,39 @@ function addSatellite(pos, m, r, s) {
 addSatellite(new Vector3(EARTH_RADIUS * 1.25, 0, 0), 10, 1, 7000);
 
 
-// const satelliteFolder = gui.addFolder("satellite position");
-// satelliteFolder
-//   .add(satellite.position, "x")
-//   .min(-20000000)
-//   .max(20000000)
-//   .step(100)
-//   .name("                       x");
-// satelliteFolder
-//   .add(satellite.position, "y")
-//   .min(-20000000)
-//   .max(20000000)
-//   .step(100)
-//   .name("                       y");
-// satelliteFolder
-//   .add(satellite.position, "z")
-//   .min(-20000000)
-//   .max(20000000)
-//   .step(100)
-//   .name("                       z");
+let time = { timeScale: 1 };
 
-// const editSpeedGui = {
-//   W() {
-//     const temp = new Vector3();
-//     initSpeed(satellite, temp.copy(satelliteV).normalize(), 1000);
-//   },
-//   S() {
-//     const temp = new Vector3();
-//     initSpeed(satellite, temp.copy(satelliteV).normalize().multiplyScalar(-1), 1000);
-//   }
-// }
-// gui.add(editSpeedGui, "W");
-// gui.add(editSpeedGui, "S");
+const satellitesFolders = guiFunc(satellites, time);
 
+export function addSat(x, y, z) {
+  const gltfLoader = new GLTFLoader();
+  const satellite = new THREE.Object3D();
 
-//Background
-const cubeTextureLoader = new THREE.CubeTextureLoader();
-scene.background = cubeTextureLoader.load([
-  starsTexture,
-  starsTexture,
-  starsTexture,
-  starsTexture,
-  starsTexture,
-  starsTexture,
-]);
+  gltfLoader.load("./assets/satellite.gltf", (gltf) => {
+    satellite.add(gltf.scene);
+    gltf.scene.position.y = -40;
+    satellite.scale.multiplyScalar(1e4);
 
-// Sizes
+    //this one is at height 5,454 km from surface of earth
+    satellite.position.set(x, y, z);
+  });
+  scene.add(satellite);
+  satellites.push(satellite);
+}
+
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
 
-window.addEventListener("resize", () => {
-  // Update sizes
-  sizes.width = window.innerWidth;
-  sizes.height = window.innerHeight;
+const camera = cameraFunc(sizes, sun);
 
-  // Update camera
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
+const renderer = rendererFunc();
 
-  // Update renderer
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-});
+misc(scene, camera, renderer, sizes);
 
-const camera = new THREE.PerspectiveCamera(
-  75,
-  sizes.width / sizes.height,
-  0.1,
-  1e9
-);
+lights(scene, sun);
 
-camera.position.z = EARTH_RADIUS * 2;
-
-/**
- * Renderer
- */
-const renderer = new THREE.WebGLRenderer({
-  canvas: document.querySelector("#bg") ?? undefined,
-  antialias: true,
-  logarithmicDepthBuffer: true,
-});
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.render(scene, camera);
 
 //Lights
@@ -234,12 +177,18 @@ function applyGravity(satellite) {
   const gravityForce = (GRAVITY_CONSTANT * EARTH_MASS * satelliteMass) / distanceSq;
   gravity.normalize().multiplyScalar(gravityForce);
   gravity.divideScalar(satelliteMass);
-  // console.log(gravity);
+  var index = 0;
 
   //collision detection with Earth
-  if (satellite.object.position.lengthSq() < EARTH_RADIUS_SQ) {
-    scene.remove(satellite);
-    satellite.object.visible = false;
+  //delete collided satellite
+  if (satellite.position.lengthSq() < EARTH_RADIUS_SQ) {
+    if (index > -1) {
+      satellites.splice(index, 1);
+      scene.remove(satellite);
+      satellite.visible = false;
+      console.log(index - 1);
+      destroyFolder(satellitesFolders, index - 1);
+    }
   }
 }
 
@@ -270,7 +219,7 @@ function onDocumentKeyDown(event) {
 
 let previousTime = Date.now();
 
-let time = { timeScale: 1 };
+const distanceVector = new Vector3();
 
 function animate() {
   const currentTime = Date.now();
@@ -306,7 +255,30 @@ function animate() {
     }
   });
 
-  earth.rotateY(0.004);
+  for (let i = 0; i < satellites.length; i++) {
+    const element = satellites[i];
+    if (satellites.length > 1) {
+      for (let j = i; j < satellites.length; j++) {
+        if (i != j) {
+          const element2 = satellites[j];
+          distanceVector.subVectors(element.position, element2.position);
+          const distance = distanceVector.lengthSq();
+          if (distance < 810000000000) {
+            scene.remove(element, element2);
+            satellites.splice(i, 1);
+            satellites.splice(j, 1);
+            element.visible = false;
+            element2.visible = false;
+            destroyFolder(satellitesFolders, i);
+            destroyFolder(satellitesFolders, j);
+          }
+        }
+      }
+    }
+  }
+
+  earth.rotateY(1.2120351080246913580246913580247e-6 * time.timeScale);
+
   requestAnimationFrame(animate);
   //
   // calculate_height(satellite);
@@ -314,7 +286,9 @@ function animate() {
   controls.update();
   renderer.render(scene, camera);
 }
-
+//gui satellite height
+// if (satellitesFolders.length >= 1)
+//   satellitesFolders[0].add(h, "height").min(0).max(10000000).listen(true);
 
 gui.add(time, "timeScale").min(0).max(20).step(0.1).name("Time Scale");
 
