@@ -6,7 +6,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import * as THREE from "three";
 
 export default class Satellite {
-  constructor() {
+  constructor(x, y, z) {
     this.experience = new Experience();
     this.scene = this.experience.scene;
 
@@ -28,9 +28,15 @@ export default class Satellite {
     //   EARTH_RADIUS + 1e3
     // );
     const satellite = new THREE.Mesh(
-      new THREE.BoxGeometry(MOON_RADIUS, MOON_RADIUS, MOON_RADIUS),
+      new THREE.BoxGeometry(MOON_RADIUS/2, MOON_RADIUS/2, MOON_RADIUS/2),
       new THREE.MeshBasicMaterial({wireframe: true})
     )
+    satellite.position.set(x, y, z);
+    // satellite.position.set(
+    //   EARTH_RADIUS * 1.2,
+    //   EARTH_RADIUS + 1e3,
+    //   EARTH_RADIUS + 1e3
+    // );
     this.scene.add(satellite);
   }
 }
