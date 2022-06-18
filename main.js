@@ -220,9 +220,8 @@ function dragForce(satellite) {
   DF.copy(temp).multiplyScalar(DForce);
 }
 function calculate_height(satellite){
-let height = (satellite.position.length()) - EARTH_RADIUS;
-console.log(height);
-//return height;
+let height = ((satellite.position.length()) - EARTH_RADIUS);
+return height;
 }
 
 document.addEventListener("keydown", onDocumentKeyDown, false);
@@ -253,7 +252,7 @@ function animate() {
   applyGravity(satellite);
 
   if (satellite.visible) {
-    if ((satellite.position.lengthSq() < EARTH_RADIUS_SQ * 1.2)) {
+    if ((calculate_height(satellite) < 6e5)) {
       dragForce(satellite);
       console.log("Hi");
     }
@@ -277,6 +276,9 @@ function animate() {
 
   earth.rotateY(0.004);
   requestAnimationFrame(animate);
+  //
+ // calculate_height(satellite);
+  //
   controls.update();
   renderer.render(scene, camera);
 }
