@@ -41,7 +41,14 @@ function calculate_height(V) {
   return height;
 }
 
-function addSatellite(pos, m, r, s) {
+let time = { timeScale: 1 };
+
+addSatellite();
+
+const satellitesFolders = guiFunc(satellites, time);
+
+export function addSatellite(pos, m, r, s) {
+  console.log("HI");
   let satellite = {
     object: new Object3D(),
     X: new Vector3(0, 0, 0),
@@ -51,7 +58,7 @@ function addSatellite(pos, m, r, s) {
     mass: 0,
     radius: 0
   }
-  satellite.object.position.set(pos.x, pos.y, pos.z);
+  satellite.object.position.set(EARTH_RADIUS + pos.x, EARTH_RADIUS + pos.y, EARTH_RADIUS + pos.z);
   satellite.height = calculate_height(pos);
   satellite.mass = m;
   satellite.raduis = r;
@@ -81,28 +88,23 @@ function addSatellite(pos, m, r, s) {
   satellite.arrows.push(arrowHelper2);
 }
 
-addSatellite(new Vector3(EARTH_RADIUS * 1.25, 0, 0), 10, 1, 7000);
+// addSatellite(new Vector3(EARTH_RADIUS * 1.25, 0, 0), 10, 1, 7000);
 
+// export function addSat(x, y, z) {
+//   const gltfLoader = new GLTFLoader();
+//   const satellite = new THREE.Object3D();
 
-let time = { timeScale: 1 };
+//   gltfLoader.load("./assets/satellite.gltf", (gltf) => {
+//     satellite.add(gltf.scene);
+//     gltf.scene.position.y = -40;
+//     satellite.scale.multiplyScalar(1e4);
 
-const satellitesFolders = guiFunc(satellites, time);
-
-export function addSat(x, y, z) {
-  const gltfLoader = new GLTFLoader();
-  const satellite = new THREE.Object3D();
-
-  gltfLoader.load("./assets/satellite.gltf", (gltf) => {
-    satellite.add(gltf.scene);
-    gltf.scene.position.y = -40;
-    satellite.scale.multiplyScalar(1e4);
-
-    //this one is at height 5,454 km from surface of earth
-    satellite.position.set(x, y, z);
-  });
-  scene.add(satellite);
-  satellites.push(satellite);
-}
+//     //this one is at height 5,454 km from surface of earth
+//     satellite.position.set(x, y, z);
+//   });
+//   scene.add(satellite);
+//   satellites.push(satellite);
+// }
 
 const sizes = {
   width: window.innerWidth,
@@ -181,12 +183,12 @@ function applyGravity(satellite) {
 
   //collision detection with Earth
   //delete collided satellite
-  if (satellite.position.lengthSq() < EARTH_RADIUS_SQ) {
+  if (satellite.object.position.lengthSq() < EARTH_RADIUS_SQ) {
     if (index > -1) {
       satellites.splice(index, 1);
       scene.remove(satellite);
-      satellite.visible = false;
-      console.log(index - 1);
+      satellite.object.visible = false;
+      // console.log(index - 1);
       destroyFolder(satellitesFolders, index - 1);
     }
   }
@@ -227,7 +229,7 @@ function animate() {
   previousTime = currentTime;
 
   satellites.forEach(satellite => {
-    console.log("HI");
+    // console.log("HI");
     applyGravity(satellite);
 
     if (satellite.object.visible) {
@@ -244,7 +246,7 @@ function animate() {
       satellite.V.add(tempV2);
 
       satellite.X.copy(satellite.V).multiplyScalar(deltaTime);
-      console.log(satellite.X);
+      // console.log(satellite.X);
       satellite.object.position.add(satellite.X);
 
       drawVector(satellite, satellite.V, 0);
