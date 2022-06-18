@@ -39,14 +39,12 @@ export function addSatellite(pos, m, r, s) {
     arrows: new Array(),
     height: 0,
     mass: 0,
-    radius: 0,
-    speed: 0
+    radius: 0
   }
   satellite.object.position.set(pos.x, pos.y, pos.z);
   satellite.height = calculate_height(pos);
   satellite.mass = m;
   satellite.raduis = r;
-  satellite.speed = s;
 
   gltfLoader.load("./assets/sputnik.gltf", (gltf) => {
     satellite.object.add(gltf.scene);
@@ -57,7 +55,7 @@ export function addSatellite(pos, m, r, s) {
   scene.add(satellite.object);
   satellites.push(satellite);
 
-  initSpeed(satellite, new Vector3(0, 0, 1).normalize(), satellite.speed);
+  initSpeed(satellite, new Vector3(0, 0, 1).normalize(), s);
 
   const arrowHelper = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0xff0000);
   scene.add(arrowHelper);

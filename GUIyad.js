@@ -14,7 +14,9 @@ function satelliteFolderFunc(allSatellitesFolder, satellites) {
   satelliteFolder.add(satellites[satellites.length - 1].object.position, "z").min(-20000000).max(20000000).listen(true).step(100).name("                z");
   satelliteFolder.add(satellites[satellites.length - 1], "mass").min(1).max(5000).step(5).listen(true).name("             mass");
   satelliteFolder.add(satellites[satellites.length - 1], "radius").min(0).max(20).step(1).listen(true).name("            radius");
-  satelliteFolder.add(satellites[satellites.length - 1], "speed").min(0).max(100000).step(10).listen(true).name("            speed");
+  satelliteFolder.add(satellites[satellites.length - 1].V, "x").min(-100000).max(100000).step(100).listen(true).name("            Vx");
+  satelliteFolder.add(satellites[satellites.length - 1].V, "y").min(-100000).max(100000).step(100).listen(true).name("            Vy");
+  satelliteFolder.add(satellites[satellites.length - 1].V, "z").min(-100000).max(100000).step(100).listen(true).name("            Vz");
   return satelliteFolder;
 }
 
@@ -60,7 +62,7 @@ export function guiFunc(satellites, time) {
   return satellitesFolders
 }
 
-export function destroyFolder(index){
-    satellitesFolders[index].destroy();
-    satellitesFolders.splice(index, 1)
+export function destroyFolder(index) {
+  satellitesFolders[index].destroy();
+  satellitesFolders.splice(index, 1)
 }
