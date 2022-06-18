@@ -147,7 +147,10 @@ function applyGravity(satellite) {
     if (index > -1) {
       satellites.splice(index, 1);
       scene.remove(satellite);
-      satellite.visible = false;
+      satellite.object.visible = false;
+      satellite.arrows.forEach(arrow => {
+        scene.remove(arrow);
+      });
       console.log(index);
       destroyFolder(index);
     }
@@ -231,8 +234,14 @@ function animate() {
 
             satellites.splice(i, 1);
             satellites.splice(j, 1);
-            element.visible = false;
-            element2.visible = false;
+            element.object.visible = false;
+            element.arrows.forEach(arrow => {
+              scene.remove(arrow);
+            });
+            element2.object.visible = false;
+            element2.arrows.forEach(arrow => {
+              scene.remove(arrow);
+            });
           }
         }
       }
