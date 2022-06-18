@@ -219,10 +219,11 @@ function dragForce(satellite) {
   temp.copy(satelliteV).normalize().multiplyScalar(-1);
   DF.copy(temp).multiplyScalar(DForce);
 }
-
-// function height(){
-//   let h = EARTH_RADIUS * (1 - ( Math.cos(360/EARTH_CIRCUMFERENCE * displacement.length) ));
-// }
+function calculate_height(satellite){
+let height = (satellite.position.length()) - EARTH_RADIUS;
+console.log(height);
+//return height;
+}
 
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
