@@ -20,7 +20,7 @@ export default class Camera {
       75,
       this.sizes.width / this.sizes.height,
       0.1,
-      1e13
+      1e9
     );
     this.instance.position.z = EARTH_RADIUS * 2;
     this.scene.add(this.instance);

@@ -32,7 +32,7 @@ export default class Experience {
     this.sizes.on("resize", () => {
       this.resize();
     });
-    // Animate
+    // Time tick event
     this.time.on("tick", () => {
       this.update();
     });
@@ -44,6 +44,5 @@ export default class Experience {
   update() {
     this.camera.update();
     this.renderer.update();
-    this.world.update();
   }
 }
