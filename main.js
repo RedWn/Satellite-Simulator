@@ -43,8 +43,6 @@ function calculate_height(V) {
 
 let time = { timeScale: 1 };
 
-addSatellite();
-
 const satellitesFolders = guiFunc(satellites, time);
 
 export function addSatellite(pos, m, r, s) {
