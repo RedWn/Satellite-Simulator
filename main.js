@@ -255,7 +255,7 @@ function animate() {
   if (satellite.visible) {
     if (calculate_height(satellite) < 6e5) {
       dragForce(satellite);
-      console.log("Hi");
+      // console.log("Hi");
     }
     const tempV = new Vector3();
     tempV.copy(gravity).multiplyScalar(deltaTime)
@@ -263,7 +263,7 @@ function animate() {
 
     const tempV2 = new Vector3();
     tempV2.copy(DA).multiplyScalar(deltaTime);
-    console.log(tempV2);
+    // console.log(tempV2);
     satelliteV.add(tempV2);
 
     satelliteX.copy(satelliteV).multiplyScalar(deltaTime);
