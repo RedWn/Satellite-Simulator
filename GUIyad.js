@@ -1,6 +1,8 @@
 import GUI from "lil-gui";
 import { addSat } from "./main";
 
+var satellitesFolders = new Array()
+
 function satelliteFolderFunc(allSatellitesFolder, satellites){
     const satelliteFolder = allSatellitesFolder.addFolder(
         "satellite no. " + (satellites.length - 1)
@@ -19,8 +21,6 @@ export function guiFunc(satellites, time) {
   const allSatellitesFolder = gui.addFolder("All Satellites");
   
   const AddSatelliteFolder = gui.addFolder("Add Satellite");
-
-  let satellitesFolders = new Array();
 
   let satelliteGuiValues = {};
   
@@ -51,7 +51,7 @@ export function guiFunc(satellites, time) {
   return satellitesFolders
 }
 
-export function destroyFolder(satellitesFolders, index){
+export function destroyFolder(index){
     satellitesFolders[index].destroy();
     satellitesFolders.splice(index, 1)
 }
