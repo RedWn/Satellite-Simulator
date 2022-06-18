@@ -30,7 +30,7 @@ let time = { timeScale: 1 };
 
 guiFunc(satellites, time);
 
-export function addSatellite(pos, m, r, s) {
+export function addSatellite(pos, mass, radius, speed, Vi) {
   console.log("HI");
   let satellite = {
     object: new Object3D(),
@@ -43,8 +43,9 @@ export function addSatellite(pos, m, r, s) {
   }
   satellite.object.position.set(pos.x, pos.y, pos.z);
   satellite.height = calculate_height(pos);
-  satellite.mass = m;
-  satellite.raduis = r;
+  satellite.mass = mass;
+  satellite.raduis = radius;
+  satellite.V = Vi
 
   gltfLoader.load("./assets/sputnik.gltf", (gltf) => {
     satellite.object.add(gltf.scene);
@@ -55,7 +56,8 @@ export function addSatellite(pos, m, r, s) {
   scene.add(satellite.object);
   satellites.push(satellite);
 
-  initSpeed(satellite, new Vector3(0, 0, 1).normalize(), s);
+  //initSpeed(satellite, new Vector3(0, 0, 1).normalize(), s);
+  initSpeed(satellite, satellite.V, speed);
 
   const arrowHelper = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0xff0000);
   scene.add(arrowHelper);
@@ -87,7 +89,7 @@ renderer.render(scene, camera);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
-function initSpeed(satellite, vec, V) {
+export function initSpeed(satellite, vec, V) {
   satellite.V.add(vec.multiplyScalar(V));
 }
 
@@ -128,7 +130,6 @@ function drawVector(satellite, V, i) {
 
 const gravity = new Vector3();
 
-
 function applyGravity(satellite) {
   gravity.subVectors(earth.position, satellite.object.position);
   const distanceSq = gravity.lengthSq();
@@ -137,7 +138,8 @@ function applyGravity(satellite) {
   console.log(satellite.mass);
 
   gravity.divideScalar(satellite.mass);
-  var index = 0;
+
+  let index = satellites.indexOf(satellite);
 
   //collision detection with Earth
   //delete collided satellite
@@ -182,13 +184,14 @@ const distanceVector = new Vector3();
 
 function animate() {
   const currentTime = Date.now();
-  const deltaTime = (currentTime - previousTime) * time.timeScale / 10;
+  const deltaTime = (currentTime - previousTime) * time.timeScale / 10;//////////TODO what is /10 (remove later??)
   previousTime = currentTime;
 
   satellites.forEach(satellite => {
     applyGravity(satellite);
 
     if (satellite.object.visible) {
+      satellite.height = calculate_height(satellite.object.position)
       if (calculate_height(satellite.object.position) < 6e5) {
         dragForce(satellite);
       }
@@ -221,22 +224,16 @@ function animate() {
           distanceVector.subVectors(element.position, element2.position);
           const distance = distanceVector.lengthSq();
           if (distance < 810000000000) {
-            scene.remove(element, element2);
-            let i2 = satellites.indexOf(element);
-            console.log("i2 " + i2);
-            destroyFolder(i2);
-
-            let j2 = satellites.indexOf(element2);
-            console.log("j2 " + j2);
-            destroyFolder(j2);
-
             satellites.splice(i, 1);
             satellites.splice(j, 1);
+            scene.remove(element, element2);
             element.object.visible = false;
+            element2.object.visible = false;
+            destroyFolder(i);
+            destroyFolder(j);
             element.arrows.forEach(arrow => {
               scene.remove(arrow);
             });
-            element2.object.visible = false;
             element2.arrows.forEach(arrow => {
               scene.remove(arrow);
             });
@@ -253,3 +250,12 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate();
+
+export function removeSatelliteFromScene(index){
+  let satToBeDeleted = satellites.at(index)
+  satToBeDeleted.arrows.forEach(arrow => {
+    scene.remove(arrow);
+  });
+  satToBeDeleted.object.visible = false;
+  scene.remove(satToBeDeleted.object)
+}
