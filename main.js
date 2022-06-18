@@ -86,6 +86,7 @@ scene.add(satellite);
 var satellites = new Array();
 satellites.push(satellite);
 
+//gui shit
 const satellitesFolder = gui.addFolder("satellites");
 const satelliteFolder = satellitesFolder.addFolder(
   "satellite " + satellites.length
@@ -290,6 +291,7 @@ function applyGravity(satellite, deltaTime) {
   h.height = Math.sqrt(distanceSq) - EARTH_RADIUS;
 }
 
+//gui satellite height
 satelliteFolders[index].add(h, "height").min(0).max(10000000).listen(true);
 
 let clock = new THREE.Clock();
