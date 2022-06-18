@@ -34,7 +34,7 @@ const sun = sunFunc(scene);
 // });
 
 const gltfLoader = new GLTFLoader();
-let satellites = new Array();
+var satellites = new Array();
 
 function calculate_height(V) {
   let height = ((V.length()) - EARTH_RADIUS);
@@ -42,6 +42,7 @@ function calculate_height(V) {
 }
 
 let time = { timeScale: 1 };
+
 
 const satellitesFolders = guiFunc(satellites, time);
 
@@ -185,9 +186,9 @@ function applyGravity(satellite) {
     if (index > -1) {
       satellites.splice(index, 1);
       scene.remove(satellite);
-      satellite.object.visible = false;
-      // console.log(index - 1);
-      destroyFolder(satellitesFolders, index - 1);
+      satellite.visible = false;
+      console.log(index);
+      destroyFolder(index);
     }
   }
 }
@@ -265,12 +266,18 @@ function animate() {
           const distance = distanceVector.lengthSq();
           if (distance < 810000000000) {
             scene.remove(element, element2);
+            let i2 = satellites.indexOf(element);
+            console.log("i2 "+i2);
+            destroyFolder(i2);
+            
+            let j2 = satellites.indexOf(element2);
+            console.log("j2 "+j2);
+            destroyFolder(j2);
+            
             satellites.splice(i, 1);
             satellites.splice(j, 1);
             element.visible = false;
             element2.visible = false;
-            destroyFolder(satellitesFolders, i);
-            destroyFolder(satellitesFolders, j);
           }
         }
       }

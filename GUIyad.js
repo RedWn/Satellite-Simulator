@@ -2,6 +2,8 @@ import GUI from "lil-gui";
 import { Vector3 } from "three";
 import { addSatellite } from "./main";
 
+var satellitesFolders = new Array()
+
 function satelliteFolderFunc(allSatellitesFolder, satellites) {
   const satelliteFolder = allSatellitesFolder.addFolder(
     "satellite no. " + (satellites.length - 1)
@@ -17,14 +19,12 @@ function satelliteFolderFunc(allSatellitesFolder, satellites) {
 }
 
 export function guiFunc(satellites, time) {
-  const gui = new GUI();
+  const gui = new GUI({ width: 320 });
   gui.add(time, "timeScale").min(0).max(100).step(0.1).name("Time Scale");
 
   const allSatellitesFolder = gui.addFolder("All Satellites");
 
   const AddSatelliteFolder = gui.addFolder("Add Satellite");
-
-  let satellitesFolders = new Array();
 
   let satelliteGuiValues = {};
 
@@ -58,7 +58,7 @@ export function guiFunc(satellites, time) {
   return satellitesFolders
 }
 
-export function destroyFolder(satellitesFolders, index) {
-  satellitesFolders[index].destroy();
-  satellitesFolders.splice(index, 1)
+export function destroyFolder(index){
+    satellitesFolders[index].destroy();
+    satellitesFolders.splice(index, 1)
 }
