@@ -252,7 +252,7 @@ function animate() {
   applyGravity(satellite);
 
   if (satellite.visible) {
-    if ((calculate_height(satellite) < 6e5)) {
+    if (calculate_height(satellite) < 6e5) {
       dragForce(satellite);
       console.log("Hi");
     }
