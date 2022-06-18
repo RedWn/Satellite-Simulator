@@ -4,6 +4,7 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { Vector3 } from "three";
+import { Object3D } from "three";
 import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -31,55 +32,96 @@ const earth = new THREE.Mesh(geometry, material);
 scene.add(earth);
 earth.position.set(0, 0, 0);
 
-// Models
+
+
+
+// satsArray[0].pos.x = 1
+// console.log(satsArray[0].pos.x)
+
+
 const gltfLoader = new GLTFLoader();
-const satellite = new THREE.Object3D();
+let satellites = new Array();
 
-gltfLoader.load("./assets/sputnik.gltf", (gltf) => {
-  satellite.add(gltf.scene);
-  // gltf.scene.position.y = -40;
-  satellite.scale.multiplyScalar(1e5 * 2);
-
-});
-// satellite.position.set(0, 6.378e7, 0)
-satellite.position.set(EARTH_RADIUS * 1.25, 0, 0);
-scene.add(satellite);
-
-
-
-
-const satelliteFolder = gui.addFolder("satellite position");
-satelliteFolder
-  .add(satellite.position, "x")
-  .min(-20000000)
-  .max(20000000)
-  .step(100)
-  .name("                       x");
-satelliteFolder
-  .add(satellite.position, "y")
-  .min(-20000000)
-  .max(20000000)
-  .step(100)
-  .name("                       y");
-satelliteFolder
-  .add(satellite.position, "z")
-  .min(-20000000)
-  .max(20000000)
-  .step(100)
-  .name("                       z");
-
-const editSpeedGui = {
-  W() {
-    const temp = new Vector3();
-    initSpeed(satellite, temp.copy(satelliteV).normalize(), 1000);
-  },
-  S() {
-    const temp = new Vector3();
-    initSpeed(satellite, temp.copy(satelliteV).normalize().multiplyScalar(-1), 1000);
-  }
+function calculate_height(V) {
+  let height = ((V.length()) - EARTH_RADIUS);
+  return height;
 }
-gui.add(editSpeedGui, "W");
-gui.add(editSpeedGui, "S");
+
+function addSatellite(pos, m, r, s) {
+  let satellite = {
+    object: new Object3D(),
+    X: new Vector3(0, 0, 0),
+    V: new Vector3(0, 0, 0),
+    arrows: new Array(),
+    height: 0,
+    mass: 0,
+    radius: 0
+  }
+  satellite.object.position.set(pos.x, pos.y, pos.z);
+  satellite.height = calculate_height(pos);
+  satellite.mass = m;
+  satellite.raduis = r;
+
+  gltfLoader.load("./assets/sputnik.gltf", (gltf) => {
+    satellite.object.add(gltf.scene);
+    // gltf.scene.position.y = -40;
+    satellite.object.scale.multiplyScalar(1e5 * 2);
+
+  });
+
+  scene.add(satellite.object);
+  satellites.push(satellite);
+
+  initSpeed(satellite, new Vector3(0, 0, 1).normalize(), s);
+
+  const arrowHelper = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0xff0000);
+  scene.add(arrowHelper);
+  satellite.arrows.push(arrowHelper);
+
+  const arrowHelper1 = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0x0000ff);
+  scene.add(arrowHelper1);
+  satellite.arrows.push(arrowHelper1);
+
+  const arrowHelper2 = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0x0000ff);
+  scene.add(arrowHelper2);
+  satellite.arrows.push(arrowHelper2);
+}
+
+addSatellite(new Vector3(EARTH_RADIUS * 1.25, 0, 0), 10, 1, 7000);
+
+
+// const satelliteFolder = gui.addFolder("satellite position");
+// satelliteFolder
+//   .add(satellite.position, "x")
+//   .min(-20000000)
+//   .max(20000000)
+//   .step(100)
+//   .name("                       x");
+// satelliteFolder
+//   .add(satellite.position, "y")
+//   .min(-20000000)
+//   .max(20000000)
+//   .step(100)
+//   .name("                       y");
+// satelliteFolder
+//   .add(satellite.position, "z")
+//   .min(-20000000)
+//   .max(20000000)
+//   .step(100)
+//   .name("                       z");
+
+// const editSpeedGui = {
+//   W() {
+//     const temp = new Vector3();
+//     initSpeed(satellite, temp.copy(satelliteV).normalize(), 1000);
+//   },
+//   S() {
+//     const temp = new Vector3();
+//     initSpeed(satellite, temp.copy(satelliteV).normalize().multiplyScalar(-1), 1000);
+//   }
+// }
+// gui.add(editSpeedGui, "W");
+// gui.add(editSpeedGui, "S");
 
 
 //Background
@@ -143,16 +185,13 @@ scene.add(pointLight);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
-const satelliteV = new Vector3();
-const satelliteX = new Vector3();
-
 function initSpeed(satellite, vec, V) {
-  satelliteV.add(vec.multiplyScalar(V));
+  satellite.V.add(vec.multiplyScalar(V));
   // console.log(satelliteV);                             
 }
 
-function drawTrail(V) {
-  const origin = satellite.position;
+function drawTrail(satellite, V) {
+  const origin = satellite.object.position;
   const length = 1e6;
   const hex = 0xffff00;
 
@@ -160,88 +199,71 @@ function drawTrail(V) {
   scene.add(arrowHelper);
   const temp = new Vector3().copy(V);
   temp.normalize();
-  const newSourcePos = satellite.position;
+  const newSourcePos = satellite.object.position;
   var newTargetPos = temp;
   arrowHelper.position.set(newSourcePos.x, newSourcePos.y, newSourcePos.z);
   const direction = new THREE.Vector3().copy(newTargetPos);
   arrowHelper.setDirection(direction.normalize());
   arrowHelper.setLength(temp.length() * 1e4);
 }
-let vectors = new Array();
-const origin = satellite.position;
 
-const arrowHelper = new THREE.ArrowHelper(new Vector3(), origin, 1, 0xff0000);
-scene.add(arrowHelper);
-vectors.push(arrowHelper);
 
-const arrowHelper1 = new THREE.ArrowHelper(new Vector3(), origin, 1, 0x0000ff);
-scene.add(arrowHelper1);
-vectors.push(arrowHelper1);
-
-const arrowHelper2 = new THREE.ArrowHelper(new Vector3(), origin, 1, 0x00ff00);
-scene.add(arrowHelper2);
-vectors.push(arrowHelper2);
-
-function drawVector(V, i) {
+function drawVector(satellite, V, i) {
 
   const temp = new Vector3().copy(V);
   temp.normalize();
-  const newSourcePos = satellite.position;
+  const newSourcePos = satellite.object.position;
   var newTargetPos = temp;
-  vectors[i].position.set(newSourcePos.x, newSourcePos.y, newSourcePos.z);
+  satellite.arrows[i].position.set(newSourcePos.x, newSourcePos.y, newSourcePos.z);
   const direction = new THREE.Vector3().copy(newTargetPos);
-  vectors[i].setDirection(direction.normalize());
-  vectors[i].setLength(temp.length() * 1e6);
+  satellite.arrows[i].setDirection(direction.normalize());
+  satellite.arrows[i].setLength(temp.length() * 1e6);
 }
 
 const gravity = new Vector3();
 const satelliteMass = 10;
 
 function applyGravity(satellite) {
-  gravity.subVectors(earth.position, satellite.position);
+  gravity.subVectors(earth.position, satellite.object.position);
   const distanceSq = gravity.lengthSq();
   const gravityForce = (GRAVITY_CONSTANT * EARTH_MASS * satelliteMass) / distanceSq;
   gravity.normalize().multiplyScalar(gravityForce);
   gravity.divideScalar(satelliteMass);
+  // console.log(gravity);
 
   //collision detection with Earth
-  if (satellite.position.lengthSq() < EARTH_RADIUS_SQ) {
+  if (satellite.object.position.lengthSq() < EARTH_RADIUS_SQ) {
     scene.remove(satellite);
-    satellite.visible = false;
+    satellite.object.visible = false;
   }
 }
 
 const DA = new Vector3();
 function dragForce(satellite) {
-  const DForce = 0.5 * VOLUMEETRIC_DENSITY * AREA * satelliteV.lengthSq() * DRAG_COEFFICIENT;// Tareq Drag Force equation
-  //const DForce = 0.5 * 1e-3 * satelliteV.lengthSq() * 0.47 * Math.PI * 1;
+  const DForce = 0.5 * VOLUMEETRIC_DENSITY * AREA * satellite.V.lengthSq() * DRAG_COEFFICIENT;// Tareq Drag Force equation
   const temp = new Vector3();
-  temp.copy(satelliteV).normalize().multiplyScalar(-1);
+  temp.copy(satellite.V).normalize().multiplyScalar(-1);
   DA.copy(temp).multiplyScalar(DForce);
   DA.divideScalar(satelliteMass);
-}
-function calculate_height(satellite) {
-  let height = ((satellite.position.length()) - EARTH_RADIUS);
-  return height;
 }
 
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
   var keyCode = event.which;
   if (keyCode == 87) {//W
-    const temp = new Vector3();
-    initSpeed(satellite, temp.copy(satelliteV).normalize(), 1000);
+    // const temp = new Vector3();
+    // initSpeed(satellite, temp.copy(satelliteV).normalize(), 1000);
+
+    addSatellite(new Vector3(0, EARTH_RADIUS * 1.25, 0), 10, 1, 7000);
   }
   if (keyCode == 83) {//S
-    const temp = new Vector3();
-    initSpeed(satellite, temp.copy(satelliteV).normalize().multiplyScalar(-1), 1000);
+    // const temp = new Vector3();
+    // initSpeed(satellite, temp.copy(satelliteV).normalize().multiplyScalar(-1), 1000);
   }
 
 };
 
 let previousTime = Date.now();
-
-initSpeed(satellite, new Vector3(0, 0, 1).normalize(), 7000);
 
 let time = { timeScale: 1 };
 
@@ -250,32 +272,34 @@ function animate() {
   const deltaTime = (currentTime - previousTime) * time.timeScale / 10;
   previousTime = currentTime;
 
-  applyGravity(satellite);
+  satellites.forEach(satellite => {
+    console.log("HI");
+    applyGravity(satellite);
 
-  if (satellite.visible) {
-    if (calculate_height(satellite) < 6e5) {
-      dragForce(satellite);
-      // console.log("Hi");
+    if (satellite.object.visible) {
+      if (calculate_height(satellite.object.position) < 6e5) {
+        dragForce(satellite);
+      }
+
+      const tempV = new Vector3();
+      tempV.copy(gravity).multiplyScalar(deltaTime)
+      satellite.V.add(tempV);
+
+      const tempV2 = new Vector3();
+      tempV2.copy(DA).multiplyScalar(deltaTime);
+      satellite.V.add(tempV2);
+
+      satellite.X.copy(satellite.V).multiplyScalar(deltaTime);
+      console.log(satellite.X);
+      satellite.object.position.add(satellite.X);
+
+      drawVector(satellite, satellite.V, 0);
+      drawVector(satellite, gravity, 1);
+      drawVector(satellite, DA, 2);
+      drawTrail(satellite, satellite.V);
+
     }
-    const tempV = new Vector3();
-    tempV.copy(gravity).multiplyScalar(deltaTime)
-    satelliteV.add(tempV);
-
-    const tempV2 = new Vector3();
-    tempV2.copy(DA).multiplyScalar(deltaTime);
-    // console.log(tempV2);
-    satelliteV.add(tempV2);
-
-    satelliteX.copy(satelliteV).multiplyScalar(deltaTime);
-    satellite.position.add(satelliteX);
-
-    // drawVector(gravity);
-    drawVector(satelliteV, 0);
-    drawVector(gravity, 1);
-    drawVector(DA, 2);
-    drawTrail(satelliteV);
-    // console.log(satelliteV);
-  }
+  });
 
   earth.rotateY(0.004);
   requestAnimationFrame(animate);
