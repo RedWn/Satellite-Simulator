@@ -9,7 +9,7 @@ import {
   MOON_TO_EARTH,
   SUN_RADIUS,
   SUN_TO_EARTH,
-} from "./Experience/Constants";
+} from "./Constants";
 
 import earthTexture from "./assets/earth.jpg";
 import moonTexture from "./assets/moon.jpg";

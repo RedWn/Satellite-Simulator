@@ -12,9 +12,9 @@ function satelliteFolderFunc(allSatellitesFolder, satellites) {
   satelliteFolder.add(satellites[satellites.length - 1].object.position, "x").min(-20000000).max(20000000).listen(true).step(100).name("                x");
   satelliteFolder.add(satellites[satellites.length - 1].object.position, "y").min(-20000000).max(20000000).listen(true).step(100).name("                y");
   satelliteFolder.add(satellites[satellites.length - 1].object.position, "z").min(-20000000).max(20000000).listen(true).step(100).name("                z");
-  satelliteFolder.add(satellites[satellites.length - 1], "mass").min(0).max(5000).step(5).listen(true).name("             mass");
+  satelliteFolder.add(satellites[satellites.length - 1], "mass").min(1).max(5000).step(5).listen(true).name("             mass");
   satelliteFolder.add(satellites[satellites.length - 1], "radius").min(0).max(20).step(1).listen(true).name("            radius");
-  //satelliteFolder.add(satellites[satellites.length - 1], "speed").min(0).max(100000).step(10).listen(true).name("            speed");
+  satelliteFolder.add(satellites[satellites.length - 1], "speed").min(0).max(100000).step(10).listen(true).name("            speed");
   return satelliteFolder;
 }
 
@@ -29,7 +29,7 @@ export function guiFunc(satellites, time) {
   let satelliteGuiValues = {};
 
   const satGui = {
-    x: 8500000, y: 8500000, z: 8500000, M: 10, r: 1, speed: 7000,
+    x: 0, y: 0, z: 0, mass: 10, radius: 1, speed: 7000,
     //at pos (8.5 million, 8.5 million, 8.5 million) the height
     // of satellite will be 8,351 km from surface of earth
     SaveSatellite() {
@@ -38,7 +38,7 @@ export function guiFunc(satellites, time) {
     },
     AddSatellite() {
       gui.load(satelliteGuiValues);
-      addSatellite(new Vector3(this.x, this.y, this.z), this.M, this.r, this.speed)
+      addSatellite(new Vector3(this.x, this.y, this.z), this.mass, this.radius, this.speed)
 
       const satelliteFolder = satelliteFolderFunc(allSatellitesFolder, satellites)
 
@@ -49,8 +49,8 @@ export function guiFunc(satellites, time) {
   AddSatelliteFolder.add(satGui, "x").min(-20000000).max(20000000).step(100).listen(true).name("                x");
   AddSatelliteFolder.add(satGui, "y").min(-20000000).max(20000000).step(100).listen(true).name("                y");
   AddSatelliteFolder.add(satGui, "z").min(-20000000).max(20000000).step(100).listen(true).name("                z");
-  AddSatelliteFolder.add(satGui, "M").min(0).max(5000).step(5).listen(true).name("             mass");
-  AddSatelliteFolder.add(satGui, "r").min(0).max(20).step(1).listen(true).name("            radius");
+  AddSatelliteFolder.add(satGui, "mass").min(0).max(5000).step(5).listen(true).name("             mass");
+  AddSatelliteFolder.add(satGui, "radius").min(0).max(20).step(1).listen(true).name("            radius");
   AddSatelliteFolder.add(satGui, "speed").min(0).max(100000).step(10).listen(true).name("            speed");
   AddSatelliteFolder.add(satGui, "SaveSatellite");
   const loadButton = AddSatelliteFolder.add(satGui, "AddSatellite").disable();

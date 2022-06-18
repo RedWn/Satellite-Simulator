@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import starsTexture from "./assets/stars.jpg";
 import earthTexture from "./assets/earth.jpg";
-import { AREA, DRAG_COEFFICIENT, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT, VOLUMEETRIC_DENSITY } from "./Experience/Constants";
+import { AREA, DRAG_COEFFICIENT, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT, VOLUMEETRIC_DENSITY } from "./Constants";
 
 import GUI from "lil-gui";
 
@@ -55,12 +55,14 @@ export function addSatellite(pos, m, r, s) {
     arrows: new Array(),
     height: 0,
     mass: 0,
-    radius: 0
+    radius: 0,
+    speed: 0
   }
-  satellite.object.position.set(EARTH_RADIUS + pos.x, EARTH_RADIUS + pos.y, EARTH_RADIUS + pos.z);
+  satellite.object.position.set(pos.x, pos.y, pos.z);
   satellite.height = calculate_height(pos);
   satellite.mass = m;
   satellite.raduis = r;
+  satellite.speed = s;
 
   gltfLoader.load("./assets/sputnik.gltf", (gltf) => {
     satellite.object.add(gltf.scene);
@@ -72,7 +74,7 @@ export function addSatellite(pos, m, r, s) {
   scene.add(satellite.object);
   satellites.push(satellite);
 
-  initSpeed(satellite, new Vector3(0, 0, 1).normalize(), s);
+  initSpeed(satellite, new Vector3(0, 0, 1).normalize(), satellite.speed);
 
   const arrowHelper = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0xff0000);
   scene.add(arrowHelper);
@@ -170,14 +172,16 @@ function drawVector(satellite, V, i) {
 }
 
 const gravity = new Vector3();
-const satelliteMass = 10;
+
 
 function applyGravity(satellite) {
   gravity.subVectors(earth.position, satellite.object.position);
   const distanceSq = gravity.lengthSq();
-  const gravityForce = (GRAVITY_CONSTANT * EARTH_MASS * satelliteMass) / distanceSq;
+  const gravityForce = (GRAVITY_CONSTANT * EARTH_MASS * satellite.mass) / distanceSq;
   gravity.normalize().multiplyScalar(gravityForce);
-  gravity.divideScalar(satelliteMass);
+  console.log(satellite.mass);
+
+  gravity.divideScalar(satellite.mass);
   var index = 0;
 
   //collision detection with Earth
@@ -199,7 +203,7 @@ function dragForce(satellite) {
   const temp = new Vector3();
   temp.copy(satellite.V).normalize().multiplyScalar(-1);
   DA.copy(temp).multiplyScalar(DForce);
-  DA.divideScalar(satelliteMass);
+  DA.divideScalar(satellite.mass);
 }
 
 document.addEventListener("keydown", onDocumentKeyDown, false);
@@ -209,7 +213,7 @@ function onDocumentKeyDown(event) {
     // const temp = new Vector3();
     // initSpeed(satellite, temp.copy(satelliteV).normalize(), 1000);
 
-    addSatellite(new Vector3(0, EARTH_RADIUS * 1.25, 0), 10, 1, 7000);
+    addSatellite(new Vector3(0, 8000000, 0), 1000, 1, 7000);
   }
   if (keyCode == 83) {//S
     // const temp = new Vector3();
