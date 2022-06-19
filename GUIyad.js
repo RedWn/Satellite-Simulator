@@ -14,25 +14,25 @@ function satelliteFolderFunc(satellites) {
   const satelliteFolder = allSatellitesFolder.addFolder(
     "satellite no. " + i
   );
-  
+
   satelliteFolder.add(satellites[i].object.position, "x").min(-20000000).max(20000000).listen(true).step(100).name("                x");
   satelliteFolder.add(satellites[i].object.position, "y").min(-20000000).max(20000000).listen(true).step(100).name("                y");
   satelliteFolder.add(satellites[i].object.position, "z").min(-20000000).max(20000000).listen(true).step(100).name("                z");
   satelliteFolder.add(satellites[i], "mass").min(1).max(5000).step(5).listen(true).name("             mass");
   satelliteFolder.add(satellites[i], "radius").min(0).max(20).step(1).listen(true).name("            radius");
   satelliteFolder.add(satellites[i], "height").min(0).max(30000000).step(100).listen(true).name("            height");
-  satelliteFolder.add(satellites[i].V, "x").min(-10000).max(10000).step(1).listen(true).name("            Vx");
-  satelliteFolder.add(satellites[i].V, "y").min(-10000).max(10000).step(1).listen(true).name("            Vy");
-  satelliteFolder.add(satellites[i].V, "z").min(-10000).max(10000).step(1).listen(true).name("            Vz");
-  
+  satelliteFolder.add(satellites[i].V, "x").min(-10000).max(10000).step(100).listen(true).name("            Vx");
+  satelliteFolder.add(satellites[i].V, "y").min(-10000).max(10000).step(100).listen(true).name("            Vy");
+  satelliteFolder.add(satellites[i].V, "z").min(-10000).max(10000).step(100).listen(true).name("            Vz");
+
   const satelliteFunctions = {
-    deleteSatellite(){
+    deleteSatellite() {
       destroyFolder(i)
       removeSatelliteFromScene(i)
       satellites.splice(i, 1)
     },
   }
-  
+
   satelliteFolder.add(satelliteFunctions, "deleteSatellite");
   return satelliteFolder;
 }
