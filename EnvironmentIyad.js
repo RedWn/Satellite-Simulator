@@ -79,11 +79,10 @@ export function misc(scene, camera, renderer, sizes) {
 
 export function lights(scene, sun) {
   const pointLight = new THREE.PointLight(0xffffff);
-  const ambientLight = new THREE.AmbientLight(0x444444);  //
-  //const ambientLight = new THREE.AmbientLight(0x555555);//CHOOSE
+  const ambientLight = new THREE.AmbientLight(0xbbbbbb);
 
   // pointLight.position.set(sun.position.x, sun.position.y, sun.position.z);//
-  pointLight.position.set(EARTH_RADIUS * 3, 0, 0);                        //CHOOSE
+  pointLight.position.set(EARTH_RADIUS * 3, 0, 0);
   scene.add(ambientLight);
   scene.add(pointLight);
   pointLight.power;

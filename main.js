@@ -7,10 +7,10 @@ import { AREA, DRAG_COEFFICIENT, earth_mass_object, EARTH_RADIUS, EARTH_RADIUS_S
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Object3D, Vector3 } from "three";
 import { cameraFunc, earthFunc, lights, misc, moonFunc, rendererFunc, sunFunc } from "./EnvironmentIyad";
-import { destroyFolder, guiFunc, satellitesFolders } from "./GUIyad";
+import { destroyFolder, guiFunc, satellitesFolders, updatePrototype } from "./GUIyad";
 
 
-const scene = new THREE.Scene();
+export const scene = new THREE.Scene();
 
 scene.add(new THREE.AxesHelper(EARTH_RADIUS / 10));
 
@@ -151,9 +151,7 @@ function applyGravity(satellite) {
         scene.remove(arrow);
       });
       console.log(index);
-      //destroyFolder(index);
-      satellitesFolders[index].destroy()
-      satellitesFolders.splice(index, 1)
+      destroyFolder(index);
     }
   }
 }
@@ -173,7 +171,7 @@ const distanceVector = new Vector3();
 
 function animate() {
   const currentTime = Date.now();
-  const deltaTime = (currentTime - previousTime) * time.timeScale / 10;//////////TODO what is /10 (remove later??)
+  const deltaTime = (currentTime - previousTime) * time.timeScale;//////////TODO what is /10 (remove later??)
   previousTime = currentTime;
 
   satellites.forEach(satellite => {
@@ -213,7 +211,7 @@ function animate() {
           const element2 = satellites[j];
           distanceVector.subVectors(element.object.position, element2.object.position);
           const distance = distanceVector.lengthSq();
-          if (distance < 810000000000) {
+          if (distance < 70000000000) {
             scene.remove(element.object, element2.object);
 
             satellites.splice(i, 1);
@@ -249,6 +247,7 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
   renderer.render(scene, camera);
+  updatePrototype();
 }
 animate();
 
