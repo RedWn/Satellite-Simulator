@@ -107,7 +107,7 @@ function drawTrail(satellite, V) {
   arrowHelper.setDirection(direction.normalize());
   arrowHelper.setLength(temp.length() * 1e5);
 
-  setTimeout(removeTrail, 7e4, arrowHelper);
+  setTimeout(removeTrail, 6e4, arrowHelper);
 }
 
 function removeTrail(arrowHelper) {
@@ -133,7 +133,7 @@ function applyGravity(satellite) {
   const distanceSq = gravity.lengthSq();
   const gravityForce = (GRAVITY_CONSTANT * earth_mass_object.EARTH_MASS * satellite.mass) / distanceSq;
   gravity.normalize().multiplyScalar(gravityForce);
-  
+
   gravity.divideScalar(satellite.mass);
 
   let index = satellites.indexOf(satellite);
