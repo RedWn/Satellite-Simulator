@@ -29,7 +29,7 @@ export function earthFunc(scene) {
 
 export function moonFunc(scene) {
   const geometry1 = new THREE.SphereGeometry(MOON_RADIUS, 64, 64);
-  const material1 = new THREE.MeshBasicMaterial({
+  const material1 = new THREE.MeshStandardMaterial({
     map: textureLoader.load(moonTexture),
     wireframe: false,
   });
@@ -77,18 +77,17 @@ export function misc(scene, camera, renderer, sizes) {
   });
 }
 
-export function lights(scene, sun) {
+export function lights(scene) {
   const pointLight = new THREE.PointLight(0xffffff);
   const ambientLight = new THREE.AmbientLight(0xbbbbbb);
 
-  // pointLight.position.set(sun.position.x, sun.position.y, sun.position.z);//
   pointLight.position.set(EARTH_RADIUS * 3, 0, 0);
   scene.add(ambientLight);
   scene.add(pointLight);
   pointLight.power;
 }
 
-export function cameraFunc(sizes, sun) {
+export function cameraFunc(sizes) {
   const camera = new THREE.PerspectiveCamera(
     75,
     sizes.width / sizes.height,
@@ -96,7 +95,6 @@ export function cameraFunc(sizes, sun) {
     1e13
   );
   camera.position.z = EARTH_RADIUS * 2;
-  camera.lookAt(sun.position);
   return camera;
 }
 

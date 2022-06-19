@@ -6,17 +6,16 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { AREA, DRAG_COEFFICIENT, earth_mass_object, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT, VOLUMEETRIC_DENSITY } from "./Constants";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Object3D, Vector3 } from "three";
-import { cameraFunc, earthFunc, lights, misc, moonFunc, rendererFunc, sunFunc } from "./EnvironmentIyad";
-import { destroyFolder, guiFunc, satellitesFolders, updatePrototype } from "./GUIyad";
-
+import { cameraFunc, earthFunc, lights, misc, moonFunc, rendererFunc, sunFunc } from "./Environment";
+import { destroyFolder, guiFunc, satellitesFolders, updatePrototype } from "./GUI";
 
 export const scene = new THREE.Scene();
 
 scene.add(new THREE.AxesHelper(EARTH_RADIUS / 10));
 
 const earth = earthFunc(scene);
-const moon = moonFunc(scene);
-const sun = sunFunc(scene);
+moonFunc(scene);
+sunFunc(scene);
 
 const gltfLoader = new GLTFLoader();
 var satellites = new Array();
@@ -54,7 +53,6 @@ export function addSatellite(pos, mass, radius, speed, Vi) {
   scene.add(satellite.object);
   satellites.push(satellite);
 
-  //initSpeed(satellite, new Vector3(0, 0, 1).normalize(), s);
   initSpeed(satellite, Vi.normalize(), speed);
 
   const arrowHelper = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0xff0000);
@@ -75,13 +73,13 @@ const sizes = {
   height: window.innerHeight,
 };
 
-const camera = cameraFunc(sizes, sun);
+const camera = cameraFunc(sizes);
 
 const renderer = rendererFunc();
 
 misc(scene, camera, renderer, sizes);
 
-lights(scene, sun);
+lights(scene);
 
 renderer.render(scene, camera);
 
