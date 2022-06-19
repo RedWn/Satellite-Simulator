@@ -31,7 +31,6 @@ let time = { timeScale: 1 };
 guiFunc(satellites, time);
 
 export function addSatellite(pos, mass, radius, speed, Vi) {
-  console.log("HI");
   let satellite = {
     object: new Object3D(),
     displacement: new Vector3(0, 0, 0),
@@ -134,8 +133,7 @@ function applyGravity(satellite) {
   const distanceSq = gravity.lengthSq();
   const gravityForce = (GRAVITY_CONSTANT * earth_mass_object.EARTH_MASS * satellite.mass) / distanceSq;
   gravity.normalize().multiplyScalar(gravityForce);
-  console.log(satellite.mass);
-
+  
   gravity.divideScalar(satellite.mass);
 
   let index = satellites.indexOf(satellite);
@@ -150,7 +148,6 @@ function applyGravity(satellite) {
       satellite.arrows.forEach(arrow => {
         scene.remove(arrow);
       });
-      console.log(index);
       destroyFolder(index);
     }
   }
@@ -219,9 +216,6 @@ function animate() {
 
             element.object.visible = false;
             element2.object.visible = false;
-
-            console.log("i" + i)
-            console.log("j" + j)
 
             satellitesFolders[i].destroy()
             satellitesFolders[j].destroy()
