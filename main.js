@@ -166,18 +166,6 @@ function dragForce(satellite) {
   DA.divideScalar(satellite.mass);
 }
 
-document.addEventListener("keydown", onDocumentKeyDown, false);
-function onDocumentKeyDown(event) {
-  var keyCode = event.which;
-  if (keyCode == 87) {//W
-
-    addSatellite(new Vector3(0, 8000000, 0), 1000, 1, 7000);
-  }
-  if (keyCode == 83) {//S
-  }
-
-};
-
 let previousTime = Date.now();
 
 const distanceVector = new Vector3();
