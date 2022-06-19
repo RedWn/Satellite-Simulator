@@ -40,6 +40,7 @@ function satelliteFolderFunc(satellites) {
 export function guiFunc(satellites, time) {
 
   gui = new GUI({ width: 320 });
+  gui.title("Simulation Controls")
 
   gui.add(time, "timeScale").min(0).max(100).step(0.1).name("Time Scale");
 
