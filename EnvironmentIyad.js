@@ -17,7 +17,7 @@ const textureLoader = new THREE.TextureLoader();
 
 export function earthFunc(scene) {
   const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
-  const material = new THREE.MeshBasicMaterial({
+  const material = new THREE.MeshStandardMaterial({
     map: textureLoader.load(earthTexture),
     wireframe: false,
   });
@@ -82,7 +82,7 @@ export function lights(scene, sun) {
   const ambientLight = new THREE.AmbientLight(0x444444);  //
   //const ambientLight = new THREE.AmbientLight(0x555555);//CHOOSE
 
-  pointLight.position.set(sun.position.x, sun.position.y, sun.position.z);//
+  // pointLight.position.set(sun.position.x, sun.position.y, sun.position.z);//
   pointLight.position.set(EARTH_RADIUS * 3, 0, 0);                        //CHOOSE
   scene.add(ambientLight);
   scene.add(pointLight);
