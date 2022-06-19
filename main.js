@@ -3,7 +3,7 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { AREA, DRAG_COEFFICIENT, earth_mass_object , EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT, VOLUMEETRIC_DENSITY } from "./Constants";
+import { AREA, DRAG_COEFFICIENT, earth_mass_object, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT, VOLUMEETRIC_DENSITY } from "./Constants";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Object3D, Vector3 } from "three";
 import { cameraFunc, earthFunc, lights, misc, moonFunc, rendererFunc, sunFunc } from "./EnvironmentIyad";
@@ -46,7 +46,7 @@ export function addSatellite(pos, mass, radius, speed, Vi) {
   satellite.mass = mass;
   satellite.raduis = radius;
 
-  gltfLoader.load("./assets/sputnik.gltf", (gltf) => {
+  gltfLoader.load("./assets/sputnik2.gltf", (gltf) => {
     satellite.object.add(gltf.scene);
     satellite.object.scale.multiplyScalar(1e5 * 2);
 
@@ -177,7 +177,7 @@ function animate() {
   previousTime = currentTime;
 
   satellites.forEach(satellite => {
-    
+
 
     if (satellite.object.visible) {
       applyGravity(satellite);
@@ -215,23 +215,23 @@ function animate() {
           const distance = distanceVector.lengthSq();
           if (distance < 810000000000) {
             scene.remove(element.object, element2.object);
-            
+
             satellites.splice(i, 1);
             satellites.splice(j, 1);
 
             element.object.visible = false;
             element2.object.visible = false;
-            
-            console.log("i"+i)
-            console.log("j"+j)
+
+            console.log("i" + i)
+            console.log("j" + j)
 
             satellitesFolders[i].destroy()
             satellitesFolders[j].destroy()
-            
-            satellitesFolders.splice(i, 1)          
+
+            satellitesFolders.splice(i, 1)
             satellitesFolders.splice(j, 1)
-  
-            
+
+
             element.arrows.forEach(arrow => {
               scene.remove(arrow);
             });
