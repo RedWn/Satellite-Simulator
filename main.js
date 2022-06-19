@@ -3,7 +3,7 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { AREA, DRAG_COEFFICIENT, EARTH_MASS, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT, VOLUMEETRIC_DENSITY } from "./Constants";
+import { AREA, DRAG_COEFFICIENT, earth_mass_object , EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT, VOLUMEETRIC_DENSITY } from "./Constants";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Object3D, Vector3 } from "three";
 import { cameraFunc, earthFunc, lights, misc, moonFunc, rendererFunc, sunFunc } from "./EnvironmentIyad";
@@ -133,7 +133,7 @@ const gravity = new Vector3();
 function applyGravity(satellite) {
   gravity.subVectors(earth.position, satellite.object.position);
   const distanceSq = gravity.lengthSq();
-  const gravityForce = (GRAVITY_CONSTANT * EARTH_MASS * satellite.mass) / distanceSq;
+  const gravityForce = (GRAVITY_CONSTANT * earth_mass_object.EARTH_MASS * satellite.mass) / distanceSq;
   gravity.normalize().multiplyScalar(gravityForce);
   console.log(satellite.mass);
 

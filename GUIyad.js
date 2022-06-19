@@ -1,3 +1,4 @@
+import { earth_mass_object } from "./Constants";
 import GUI from "lil-gui";
 import { Vector3 } from "three";
 import { addSatellite, removeSatelliteFromScene } from "./main";
@@ -41,6 +42,8 @@ export function guiFunc(satellites, time) {
   gui = new GUI({ width: 320 });
 
   gui.add(time, "timeScale").min(0).max(100).step(0.1).name("Time Scale");
+
+  gui.add(earth_mass_object, "EARTH_MASS").min(1000).max(5.972e24 * 10).listen(true).name("Earth Mass")
 
   allSatellitesFolder = gui.addFolder("All Satellites");
 

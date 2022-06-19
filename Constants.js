@@ -1,4 +1,5 @@
-export const EARTH_MASS = 5.972e24;
+const EARTH_MASS = 5.972e24;
+export let earth_mass_object = {EARTH_MASS}
 
 export const EARTH_RADIUS = 6.378e6;
 
