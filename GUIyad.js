@@ -1,4 +1,4 @@
-import { earth_mass_object } from "./Constants";
+import { earth_mass_object, EARTH_RADIUS } from "./Constants";
 import GUI from "lil-gui";
 import * as THREE from "three";
 import { Vector3 } from "three";
@@ -56,7 +56,7 @@ export function guiFunc(satellites, time) {
   let satelliteGuiValues = {};
 
   satGui = {
-    x: 7000000, y: 7000000, z: 7000000, mass: 10, radius: 1, speed: 7000, Vx: 0, Vy: 0, Vz: 0,
+    x: 7000000, y: 7000000, z: 7000000, mass: 10, radius: 1, speed: 7000, Vx: 0, Vy: 0, Vz: 0, height: 0,
     //at pos (8.5 million, 8.5 million, 8.5 million) the height
     // of satellite will be 8,351 km from surface of earth
     SaveSatellite() {
@@ -73,11 +73,14 @@ export function guiFunc(satellites, time) {
     },
   };
   //at pos (20 million, 20 million, 20 million) the height of satellite will be 28,270 km
-  AddSatelliteFolder.add(satGui, "x").min(-20000000).max(20000000).step(1000).listen(true).name("                x");
-  AddSatelliteFolder.add(satGui, "y").min(-20000000).max(20000000).step(100).listen(true).name("                y");
-  AddSatelliteFolder.add(satGui, "z").min(-20000000).max(20000000).step(1000).listen(true).name("                z");
+  AddSatelliteFolder.add(satGui, "x").min(-20000000).max(20000000).step(10000).listen(true).name("                x");
+  AddSatelliteFolder.add(satGui, "y").min(-20000000).max(20000000).step(10000).listen(true).name("                y");
+  AddSatelliteFolder.add(satGui, "z").min(-20000000).max(20000000).step(10000).listen(true).name("                z");
+
+  AddSatelliteFolder.add(satGui, "height").min(0).max(30000000).step(100).listen(true).name("                height");
   AddSatelliteFolder.add(satGui, "mass").min(0).max(5000).step(5).listen(true).name("             mass");
   AddSatelliteFolder.add(satGui, "radius").min(0).max(20).step(1).listen(true).name("            radius");
+  
   AddSatelliteFolder.add(satGui, "Vx").min(-1).max(1).step(0.1).listen(true).name("                Vx");
   AddSatelliteFolder.add(satGui, "Vy").min(-1).max(1).step(0.1).listen(true).name("                Vy");
   AddSatelliteFolder.add(satGui, "Vz").min(-1).max(1).step(0.1).listen(true).name("                Vz");
@@ -99,4 +102,5 @@ export function destroyFolder(index) {
 
 export function updatePrototype(){
   prototype.position.set(satGui.x, satGui.y, satGui.z)
+  satGui.height = ((prototype.position.length()) - EARTH_RADIUS);
 }
