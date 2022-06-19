@@ -45,7 +45,7 @@ export function guiFunc(satellites, time) {
   gui = new GUI({ width: 320 });
   gui.title("Simulation Controls")
 
-  gui.add(time, "timeScale").min(0).max(100).step(0.1).name("Time Scale");
+  gui.add(time, "timeScale").min(0).max(1000).step(0.5).name("Time Scale");
 
   gui.add(earth_mass_object, "EARTH_MASS").min(1000).max(5.972e24 * 10).listen(true).name("Earth Mass")
 
@@ -56,7 +56,7 @@ export function guiFunc(satellites, time) {
   let satelliteGuiValues = {};
 
   satGui = {
-    x: 8000000, y: 8000000, z: 8000000, mass: 10, radius: 1, speed: 7000, Vx: 0, Vy: 1, Vz: 0, height: 0,
+    x: 0, y: 8000000, z: 0, mass: 10, radius: 1, speed: 7000, Vx: 1, Vy: 0, Vz: 0, height: 0,
     //at pos (8.5 million, 8.5 million, 8.5 million) the height
     // of satellite will be 8,351 km from surface of earth
     SaveSatellite() {
@@ -84,7 +84,7 @@ export function guiFunc(satellites, time) {
   AddSatelliteFolder.add(satGui, "Vx").min(-1).max(1).step(0.1).listen(true).name("                Vx");
   AddSatelliteFolder.add(satGui, "Vy").min(-1).max(1).step(0.1).listen(true).name("                Vy");
   AddSatelliteFolder.add(satGui, "Vz").min(-1).max(1).step(0.1).listen(true).name("                Vz");
-  AddSatelliteFolder.add(satGui, "speed").min(0).max(10000).step(100).listen(true).name("            speed");
+  AddSatelliteFolder.add(satGui, "speed").min(0).max(12000).step(100).listen(true).name("            speed");
   AddSatelliteFolder.add(satGui, "SaveSatellite");
   const loadButton = AddSatelliteFolder.add(satGui, "AddSatellite").disable();
 

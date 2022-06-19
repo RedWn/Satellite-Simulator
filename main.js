@@ -155,7 +155,7 @@ function applyGravity(satellite) {
 
 const DA = new Vector3();
 function dragForce(satellite) {
-  const DForce = 0.5 * VOLUMEETRIC_DENSITY * AREA * satellite.V.lengthSq() * DRAG_COEFFICIENT;// Tareq Drag Force equation
+  const DForce = 0.5 * VOLUMEETRIC_DENSITY * AREA * satellite.V.lengthSq() * DRAG_COEFFICIENT;
   const temp = new Vector3();
   temp.copy(satellite.V).normalize().multiplyScalar(-1);
   DA.copy(temp).multiplyScalar(DForce);
@@ -168,11 +168,10 @@ const distanceVector = new Vector3();
 
 function animate() {
   const currentTime = Date.now();
-  const deltaTime = (currentTime - previousTime) * time.timeScale / 1000;//////////TODO what is /10 (remove later??)
+  const deltaTime = (currentTime - previousTime) * time.timeScale / 1000;
   previousTime = currentTime;
 
   satellites.forEach(satellite => {
-
 
     if (satellite.object.visible) {
       applyGravity(satellite);
@@ -222,7 +221,6 @@ function animate() {
 
             satellitesFolders.splice(i, 1)
             satellitesFolders.splice(j, 1)
-
 
             element.arrows.forEach(arrow => {
               scene.remove(arrow);
