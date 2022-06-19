@@ -46,9 +46,9 @@ export function addSatellite(pos, m, r, s) {
   satellite.mass = m;
   satellite.raduis = r;
 
-  gltfLoader.load("./assets/sputnik.gltf", (gltf) => {
+  gltfLoader.load("./assets/satellite_new/scene.gltf", (gltf) => {
     satellite.object.add(gltf.scene);
-    satellite.object.scale.multiplyScalar(1e5 * 2);
+    satellite.object.scale.multiplyScalar(1e4*1.5 );
 
   });
 
