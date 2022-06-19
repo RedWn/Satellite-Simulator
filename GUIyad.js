@@ -4,7 +4,7 @@ import { Vector3 } from "three";
 import { addSatellite, removeSatelliteFromScene } from "./main";
 
 var allSatellitesFolder
-var satellitesFolders = new Array()
+export var satellitesFolders = new Array()
 var gui
 
 function satelliteFolderFunc(satellites) {
@@ -84,6 +84,6 @@ export function guiFunc(satellites, time) {
 }
 
 export function destroyFolder(index) {
-  satellitesFolders.splice(index, 1)
   satellitesFolders[index].destroy()
+  satellitesFolders.splice(index, 1)
 }

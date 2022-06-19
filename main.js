@@ -7,7 +7,7 @@ import { AREA, DRAG_COEFFICIENT, earth_mass_object , EARTH_RADIUS, EARTH_RADIUS_
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Object3D, Vector3 } from "three";
 import { cameraFunc, earthFunc, lights, misc, moonFunc, rendererFunc, sunFunc } from "./EnvironmentIyad";
-import { destroyFolder, guiFunc } from "./GUIyad";
+import { destroyFolder, guiFunc, satellitesFolders } from "./GUIyad";
 
 
 const scene = new THREE.Scene();
@@ -151,7 +151,9 @@ function applyGravity(satellite) {
         scene.remove(arrow);
       });
       console.log(index);
-      destroyFolder(index);
+      //destroyFolder(index);
+      satellitesFolders[index].destroy()
+      satellitesFolders.splice(index, 1)
     }
   }
 }
@@ -213,21 +215,22 @@ function animate() {
           const distance = distanceVector.lengthSq();
           if (distance < 810000000000) {
             scene.remove(element.object, element2.object);
+            
             satellites.splice(i, 1);
             satellites.splice(j, 1);
-            console.log("i"+i)
-            console.log("j"+j)
-            
+
             element.object.visible = false;
             element2.object.visible = false;
-            destroyFolder(i);
+            
             console.log("i"+i)
             console.log("j"+j)
+
+            satellitesFolders[i].destroy()
+            satellitesFolders[j].destroy()
             
-            destroyFolder(j);
-            console.log("i"+i)
-            console.log("j"+j)
-            
+            satellitesFolders.splice(i, 1)          
+            satellitesFolders.splice(j, 1)
+  
             
             element.arrows.forEach(arrow => {
               scene.remove(arrow);
