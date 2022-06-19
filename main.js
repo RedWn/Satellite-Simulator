@@ -175,11 +175,12 @@ function animate() {
   previousTime = currentTime;
 
   satellites.forEach(satellite => {
-    applyGravity(satellite);
+    
 
     if (satellite.object.visible) {
+      applyGravity(satellite);
       satellite.height = calculate_height(satellite.object.position)
-      if (calculate_height(satellite.object.position) < 6e5) {
+      if (satellite.height < 6e5) {
         dragForce(satellite);
       }
 
@@ -203,21 +204,31 @@ function animate() {
   });
 
   for (let i = 0; i < satellites.length; i++) {
-    const element = satellites[i].object;
+    const element = satellites[i];
     if (satellites.length > 1) {
       for (let j = i; j < satellites.length; j++) {
         if (i != j) {
-          const element2 = satellites[j].object;
-          distanceVector.subVectors(element.position, element2.position);
+          const element2 = satellites[j];
+          distanceVector.subVectors(element.object.position, element2.object.position);
           const distance = distanceVector.lengthSq();
           if (distance < 810000000000) {
+            scene.remove(element.object, element2.object);
             satellites.splice(i, 1);
             satellites.splice(j, 1);
-            scene.remove(element, element2);
+            console.log("i"+i)
+            console.log("j"+j)
+            
             element.object.visible = false;
             element2.object.visible = false;
             destroyFolder(i);
+            console.log("i"+i)
+            console.log("j"+j)
+            
             destroyFolder(j);
+            console.log("i"+i)
+            console.log("j"+j)
+            
+            
             element.arrows.forEach(arrow => {
               scene.remove(arrow);
             });

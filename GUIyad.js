@@ -84,6 +84,6 @@ export function guiFunc(satellites, time) {
 }
 
 export function destroyFolder(index) {
-  satellitesFolders[index].destroy();
   satellitesFolders.splice(index, 1)
+  satellitesFolders[index].destroy()
 }
