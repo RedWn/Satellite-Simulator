@@ -45,7 +45,6 @@ export function addSatellite(pos, mass, radius, speed, Vi) {
   satellite.height = calculate_height(pos);
   satellite.mass = mass;
   satellite.raduis = radius;
-  satellite.V = Vi
 
   gltfLoader.load("./assets/sputnik.gltf", (gltf) => {
     satellite.object.add(gltf.scene);
@@ -57,7 +56,7 @@ export function addSatellite(pos, mass, radius, speed, Vi) {
   satellites.push(satellite);
 
   //initSpeed(satellite, new Vector3(0, 0, 1).normalize(), s);
-  initSpeed(satellite, satellite.V, speed);
+  initSpeed(satellite, Vi.normalize(), speed);
 
   const arrowHelper = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0xff0000);
   scene.add(arrowHelper);
@@ -166,18 +165,6 @@ function dragForce(satellite) {
   DA.divideScalar(satellite.mass);
 }
 
-document.addEventListener("keydown", onDocumentKeyDown, false);
-function onDocumentKeyDown(event) {
-  var keyCode = event.which;
-  if (keyCode == 87) {//W
-
-    addSatellite(new Vector3(0, 8000000, 0), 1000, 1, 7000);
-  }
-  if (keyCode == 83) {//S
-  }
-
-};
-
 let previousTime = Date.now();
 
 const distanceVector = new Vector3();
@@ -251,7 +238,7 @@ function animate() {
 }
 animate();
 
-export function removeSatelliteFromScene(index){
+export function removeSatelliteFromScene(index) {
   let satToBeDeleted = satellites.at(index)
   satToBeDeleted.arrows.forEach(arrow => {
     scene.remove(arrow);
