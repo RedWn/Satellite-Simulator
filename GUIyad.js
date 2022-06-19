@@ -38,7 +38,7 @@ function satelliteFolderFunc(satellites) {
   return satelliteFolder;
 }
 
-let prototype, satGui
+let prototype, satGui, arrowHelper
 
 export function guiFunc(satellites, time) {
 
@@ -56,7 +56,7 @@ export function guiFunc(satellites, time) {
   let satelliteGuiValues = {};
 
   satGui = {
-    x: 7000000, y: 7000000, z: 7000000, mass: 10, radius: 1, speed: 7000, Vx: 0, Vy: 0, Vz: 0, height: 0,
+    x: 8000000, y: 8000000, z: 8000000, mass: 10, radius: 1, speed: 7000, Vx: 0, Vy: 1, Vz: 0, height: 0,
     //at pos (8.5 million, 8.5 million, 8.5 million) the height
     // of satellite will be 8,351 km from surface of earth
     SaveSatellite() {
@@ -80,7 +80,7 @@ export function guiFunc(satellites, time) {
   AddSatelliteFolder.add(satGui, "height").min(0).max(30000000).step(100).listen(true).name("                height");
   AddSatelliteFolder.add(satGui, "mass").min(0).max(5000).step(5).listen(true).name("             mass");
   AddSatelliteFolder.add(satGui, "radius").min(0).max(20).step(1).listen(true).name("            radius");
-  
+
   AddSatelliteFolder.add(satGui, "Vx").min(-1).max(1).step(0.1).listen(true).name("                Vx");
   AddSatelliteFolder.add(satGui, "Vy").min(-1).max(1).step(0.1).listen(true).name("                Vy");
   AddSatelliteFolder.add(satGui, "Vz").min(-1).max(1).step(0.1).listen(true).name("                Vz");
@@ -88,10 +88,13 @@ export function guiFunc(satellites, time) {
   AddSatelliteFolder.add(satGui, "SaveSatellite");
   const loadButton = AddSatelliteFolder.add(satGui, "AddSatellite").disable();
 
-  prototype = new THREE.Mesh( new THREE.SphereGeometry( 15, 32, 16 ),
-               new THREE.MeshBasicMaterial( { color: 0xffa0f0 } ) );
-  prototype.scale.multiplyScalar(10000)
-  scene.add( prototype );
+  prototype = new THREE.Mesh(new THREE.SphereGeometry(15, 32, 16),
+    new THREE.MeshBasicMaterial({ color: 0xffa0f0 }));
+  prototype.scale.multiplyScalar(10000);
+
+  arrowHelper = new THREE.ArrowHelper(new Vector3(), prototype.position, 1, 0xffa0f0);
+  scene.add(prototype);
+  scene.add(arrowHelper);
 
 }
 
@@ -100,7 +103,10 @@ export function destroyFolder(index) {
   satellitesFolders.splice(index, 1)
 }
 
-export function updatePrototype(){
+export function updatePrototype() {
   prototype.position.set(satGui.x, satGui.y, satGui.z)
   satGui.height = ((prototype.position.length()) - EARTH_RADIUS);
+  arrowHelper.position.set(satGui.x, satGui.y, satGui.z);
+  arrowHelper.setDirection(new Vector3(satGui.Vx, satGui.Vy, satGui.Vz).normalize());
+  arrowHelper.setLength(satGui.speed * 1e2);
 }
