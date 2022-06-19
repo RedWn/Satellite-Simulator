@@ -47,7 +47,7 @@ export function addSatellite(pos, mass, radius, speed, Vi) {
 
   gltfLoader.load("./assets/sputnik2.gltf", (gltf) => {
     satellite.object.add(gltf.scene);
-    satellite.object.scale.multiplyScalar(1e5 * 2);
+    satellite.object.scale.multiplyScalar(1e5);
 
   });
 
@@ -105,7 +105,7 @@ function drawTrail(satellite, V) {
   arrowHelper.position.set(newSourcePos.x, newSourcePos.y, newSourcePos.z);
   const direction = new THREE.Vector3().copy(newTargetPos);
   arrowHelper.setDirection(direction.normalize());
-  arrowHelper.setLength(temp.length() * 1e4);
+  arrowHelper.setLength(temp.length() * 1e5);
 
   setTimeout(removeTrail, 7e4, arrowHelper);
 }
@@ -168,7 +168,7 @@ const distanceVector = new Vector3();
 
 function animate() {
   const currentTime = Date.now();
-  const deltaTime = (currentTime - previousTime) * time.timeScale;//////////TODO what is /10 (remove later??)
+  const deltaTime = (currentTime - previousTime) * time.timeScale / 1000;//////////TODO what is /10 (remove later??)
   previousTime = currentTime;
 
   satellites.forEach(satellite => {
