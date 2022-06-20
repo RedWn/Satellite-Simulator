@@ -3,11 +3,32 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { AREA, DRAG_COEFFICIENT, earth_mass_object, EARTH_RADIUS, EARTH_RADIUS_SQ, GRAVITY_CONSTANT, VOLUMEETRIC_DENSITY } from "./Constants";
+import {
+  AREA,
+  DRAG_COEFFICIENT,
+  earth_mass_object,
+  EARTH_RADIUS,
+  EARTH_RADIUS_SQ,
+  GRAVITY_CONSTANT,
+  VOLUMEETRIC_DENSITY,
+} from "./Constants";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Object3D, Vector3 } from "three";
-import { cameraFunc, earthFunc, lights, misc, moonFunc, rendererFunc, sunFunc } from "./Environment";
-import { destroyFolder, guiFunc, satellitesFolders, updatePrototype } from "./GUI";
+import {
+  cameraFunc,
+  earthFunc,
+  lights,
+  misc,
+  moonFunc,
+  rendererFunc,
+  sunFunc,
+} from "./Environment";
+import {
+  destroyFolder,
+  guiFunc,
+  satellitesFolders,
+  updatePrototype,
+} from "./GUI";
 
 export const scene = new THREE.Scene();
 
@@ -21,7 +42,7 @@ const gltfLoader = new GLTFLoader();
 var satellites = new Array();
 
 function calculate_height(V) {
-  let height = ((V.length()) - EARTH_RADIUS);
+  let height = V.length() - EARTH_RADIUS;
   return height;
 }
 
@@ -37,17 +58,16 @@ export function addSatellite(pos, mass, radius, speed, Vi) {
     arrows: new Array(),
     height: 0,
     mass: 0,
-    radius: 0
-  }
+    radius: 0,
+  };
   satellite.object.position.set(pos.x, pos.y, pos.z);
   satellite.height = calculate_height(pos);
   satellite.mass = mass;
-  satellite.raduis = radius;
+  satellite.radius = radius;
 
   gltfLoader.load("./assets/sputnik2.gltf", (gltf) => {
     satellite.object.add(gltf.scene);
     satellite.object.scale.multiplyScalar(1e5);
-
   });
 
   scene.add(satellite.object);
@@ -55,15 +75,30 @@ export function addSatellite(pos, mass, radius, speed, Vi) {
 
   initSpeed(satellite, Vi.normalize(), speed);
 
-  const arrowHelper = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0xff0000);
+  const arrowHelper = new THREE.ArrowHelper(
+    new Vector3(),
+    satellite.object.position,
+    1,
+    0xff0000
+  );
   scene.add(arrowHelper);
   satellite.arrows.push(arrowHelper);
 
-  const arrowHelper1 = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0x0000ff);
+  const arrowHelper1 = new THREE.ArrowHelper(
+    new Vector3(),
+    satellite.object.position,
+    1,
+    0x0000ff
+  );
   scene.add(arrowHelper1);
   satellite.arrows.push(arrowHelper1);
 
-  const arrowHelper2 = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0x00ff00);
+  const arrowHelper2 = new THREE.ArrowHelper(
+    new Vector3(),
+    satellite.object.position,
+    1,
+    0x00ff00
+  );
   scene.add(arrowHelper2);
   satellite.arrows.push(arrowHelper2);
 }
@@ -85,8 +120,8 @@ renderer.render(scene, camera);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
-export function initSpeed(satellite, vec, V) {
-  satellite.V.add(vec.multiplyScalar(V));
+export function initSpeed(satellite, vec, speed) {
+  satellite.V.add(vec.multiplyScalar(speed));
 }
 
 function drawTrail(satellite, V) {
@@ -113,12 +148,15 @@ function removeTrail(arrowHelper) {
 }
 
 function drawVector(satellite, V, i) {
-
   const temp = new Vector3().copy(V);
   temp.normalize();
   const newSourcePos = satellite.object.position;
   var newTargetPos = temp;
-  satellite.arrows[i].position.set(newSourcePos.x, newSourcePos.y, newSourcePos.z);
+  satellite.arrows[i].position.set(
+    newSourcePos.x,
+    newSourcePos.y,
+    newSourcePos.z
+  );
   const direction = new THREE.Vector3().copy(newTargetPos);
   satellite.arrows[i].setDirection(direction.normalize());
   satellite.arrows[i].setLength(V.length() * 1e6);
@@ -129,7 +167,9 @@ const gravity = new Vector3();
 function applyGravity(satellite) {
   gravity.subVectors(earth.position, satellite.object.position);
   const distanceSq = gravity.lengthSq();
-  const gravityForce = (GRAVITY_CONSTANT * earth_mass_object.EARTH_MASS * satellite.mass) / distanceSq;
+  const gravityForce =
+    (GRAVITY_CONSTANT * earth_mass_object.EARTH_MASS * satellite.mass) /
+    distanceSq;
   gravity.normalize().multiplyScalar(gravityForce);
 
   gravity.divideScalar(satellite.mass);
@@ -143,7 +183,7 @@ function applyGravity(satellite) {
       satellites.splice(index, 1);
       scene.remove(satellite);
       satellite.object.visible = false;
-      satellite.arrows.forEach(arrow => {
+      satellite.arrows.forEach((arrow) => {
         scene.remove(arrow);
       });
       destroyFolder(index);
@@ -153,7 +193,14 @@ function applyGravity(satellite) {
 
 const DA = new Vector3();
 function dragForce(satellite) {
-  const DForce = 0.5 * VOLUMEETRIC_DENSITY * AREA * satellite.V.lengthSq() * DRAG_COEFFICIENT;
+  const DForce =
+    0.5 *
+    VOLUMEETRIC_DENSITY *
+    Math.PI *
+    satellite.radius *
+    satellite.radius *
+    satellite.V.lengthSq() *
+    DRAG_COEFFICIENT;
   const temp = new Vector3();
   temp.copy(satellite.V).normalize().multiplyScalar(-1);
   DA.copy(temp).multiplyScalar(DForce);
@@ -166,20 +213,20 @@ const distanceVector = new Vector3();
 
 function animate() {
   const currentTime = Date.now();
-  const deltaTime = (currentTime - previousTime) * time.timeScale / 1000;
+  const deltaTime = ((currentTime - previousTime) * time.timeScale) / 1000;
   previousTime = currentTime;
 
-  satellites.forEach(satellite => {
-
+  satellites.forEach((satellite) => {
     if (satellite.object.visible) {
       applyGravity(satellite);
-      satellite.height = calculate_height(satellite.object.position)
+      satellite.height = calculate_height(satellite.object.position);
       if (satellite.height < 6e5) {
+        //600 km
         dragForce(satellite);
       }
 
       const tempV = new Vector3();
-      tempV.copy(gravity).multiplyScalar(deltaTime)
+      tempV.copy(gravity).multiplyScalar(deltaTime);
       satellite.V.add(tempV);
 
       const tempV2 = new Vector3();
@@ -193,7 +240,6 @@ function animate() {
       drawVector(satellite, gravity, 1);
       drawVector(satellite, DA, 2);
       drawTrail(satellite, satellite.V);
-
     }
   });
 
@@ -203,29 +249,28 @@ function animate() {
       for (let j = i; j < satellites.length; j++) {
         if (i != j) {
           const element2 = satellites[j];
-          distanceVector.subVectors(element.object.position, element2.object.position);
+          distanceVector.subVectors(
+            element.object.position,
+            element2.object.position
+          );
           const distance = distanceVector.lengthSq();
           if (distance < 70000000000) {
-            scene.remove(element.object, element2.object);
+            let v = element.V.multiplyScalar(element.mass)
+              .add(element2.V.multiplyScalar(element2.mass))
+              .divideScalar(element.mass + element2.mass);
+            let mTotal = element.mass + element2.mass;
 
-            satellites.splice(i, 1);
-            satellites.splice(j, 1);
-
-            element.object.visible = false;
+            element.mass = mTotal;
+            let index = satellites.indexOf(element2);
+            satellites.splice(index, 1);
+            scene.remove(element2);
             element2.object.visible = false;
-
-            satellitesFolders[i].destroy()
-            satellitesFolders[j].destroy()
-
-            satellitesFolders.splice(i, 1)
-            satellitesFolders.splice(j, 1)
-
-            element.arrows.forEach(arrow => {
+            element2.arrows.forEach((arrow) => {
               scene.remove(arrow);
             });
-            element2.arrows.forEach(arrow => {
-              scene.remove(arrow);
-            });
+            destroyFolder(index);
+            element.object.scale.multiplyScalar(2);
+            element.V.copy(v);
           }
         }
       }
@@ -242,10 +287,10 @@ function animate() {
 animate();
 
 export function removeSatelliteFromScene(index) {
-  let satToBeDeleted = satellites.at(index)
-  satToBeDeleted.arrows.forEach(arrow => {
+  let satToBeDeleted = satellites.at(index);
+  satToBeDeleted.arrows.forEach((arrow) => {
     scene.remove(arrow);
   });
   satToBeDeleted.object.visible = false;
-  scene.remove(satToBeDeleted.object)
+  scene.remove(satToBeDeleted.object);
 }

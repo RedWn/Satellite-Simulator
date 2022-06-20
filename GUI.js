@@ -16,9 +16,9 @@ function satelliteFolderFunc(satellites) {
     "satellite no. " + i
   );
 
-  satelliteFolder.add(satellites[i].object.position, "x").min(-20000000).max(20000000).listen(true).step(100).name("                x");
-  satelliteFolder.add(satellites[i].object.position, "y").min(-20000000).max(20000000).listen(true).step(100).name("                y");
-  satelliteFolder.add(satellites[i].object.position, "z").min(-20000000).max(20000000).listen(true).step(100).name("                z");
+  satelliteFolder.add(satellites[i].object.position, "x").min(-20000000).max(20000000).listen(true).step(10000).name("                x");
+  satelliteFolder.add(satellites[i].object.position, "y").min(-20000000).max(20000000).listen(true).step(10000).name("                y");
+  satelliteFolder.add(satellites[i].object.position, "z").min(-20000000).max(20000000).listen(true).step(10000).name("                z");
   satelliteFolder.add(satellites[i], "mass").min(1).max(5000).step(5).listen(true).name("             mass");
   satelliteFolder.add(satellites[i], "radius").min(0).max(20).step(1).listen(true).name("            radius");
   satelliteFolder.add(satellites[i], "height").min(0).max(30000000).step(100).listen(true).name("            height");
@@ -47,7 +47,7 @@ export function guiFunc(satellites, time) {
 
   gui.add(time, "timeScale").min(0).max(1000).step(0.5).name("Time Scale");
 
-  gui.add(earth_mass_object, "EARTH_MASS").min(1000).max(5.972e24 * 10).listen(true).name("Earth Mass")
+  gui.add(earth_mass_object, "EARTH_MASS").min(0).max(5.972e24 * 10).listen(true).name("Earth Mass")
 
   allSatellitesFolder = gui.addFolder("All Satellites");
 
