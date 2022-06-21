@@ -1,4 +1,4 @@
-# Satellite-Sim
+# Satellite-Simulation
 Physics project done by two students in almost 4 days for a Damascus University project
 
 
@@ -42,7 +42,7 @@ the main controls of the sim are all through the provided GUI.
 
 we will try and deliver a web hosted instant-try version asap
 
-## This project was made with the huge efforts of my partner @[IyadAlanssary](https://github.com/IyadAlanssary) and me @[RedWn](https://github.com/RedWn)
+## This project was made with the efforts of my partner @[IyadAlanssary](https://github.com/IyadAlanssary) and me @[RedWn](https://github.com/RedWn)
 thx to @[tarook0](https://github.com/tarook0), @[Hamsho](https://github.com/Hamsho) and @[Maias-Alakramy](https://github.com/Maias-Alakramy) for additional help
 
 ## How to help?
