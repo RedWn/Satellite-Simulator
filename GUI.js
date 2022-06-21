@@ -2,15 +2,15 @@ import { earth_mass_object, EARTH_RADIUS } from "./Constants";
 import GUI from "lil-gui";
 import * as THREE from "three";
 import { Vector3 } from "three";
-import { addSatellite, removeSatelliteFromScene, scene } from "./main";
+import { addSatellite, removeSatelliteFromScene, satellites, scene, time } from "./main";
 
 var allSatellitesFolder
 export var satellitesFolders = new Array()
 var gui
 
-function satelliteFolderFunc(satellites) {
+export function satelliteFolderFunc(i) {
 
-  let i = satellites.length - 1
+  //let i = satellites.length - 1
 
   const satelliteFolder = allSatellitesFolder.addFolder(
     "satellite no. " + i
@@ -22,15 +22,14 @@ function satelliteFolderFunc(satellites) {
   satelliteFolder.add(satellites[i], "mass").min(1).max(5000).step(5).listen(true).name("             mass");
   satelliteFolder.add(satellites[i], "radius").min(0).max(20).step(1).listen(true).name("            radius");
   satelliteFolder.add(satellites[i], "height").min(0).max(30000000).step(100).listen(true).name("            height");
-  satelliteFolder.add(satellites[i].V, "x").min(-10000).max(10000).step(100).listen(true).name("            Vx");
-  satelliteFolder.add(satellites[i].V, "y").min(-10000).max(10000).step(100).listen(true).name("            Vy");
-  satelliteFolder.add(satellites[i].V, "z").min(-10000).max(10000).step(100).listen(true).name("            Vz");
+  satelliteFolder.add(satellites[i].velocityVector, "x").min(-10000).max(10000).step(100).listen(true).name("            Vx");
+  satelliteFolder.add(satellites[i].velocityVector, "y").min(-10000).max(10000).step(100).listen(true).name("            Vy");
+  satelliteFolder.add(satellites[i].velocityVector, "z").min(-10000).max(10000).step(100).listen(true).name("            Vz");
 
   const satelliteFunctions = {
     deleteSatellite() {
       destroyFolder(i)
       removeSatelliteFromScene(i)
-      satellites.splice(i, 1)
     },
   }
 
@@ -40,7 +39,7 @@ function satelliteFolderFunc(satellites) {
 
 let prototype, satGui, arrowHelper
 
-export function guiFunc(satellites, time) {
+export function guiFunc(satellites) {
 
   gui = new GUI({ width: 320 });
   gui.title("Simulation Controls")
@@ -67,9 +66,9 @@ export function guiFunc(satellites, time) {
       gui.load(satelliteGuiValues);
       addSatellite(new Vector3(this.x, this.y, this.z), this.mass, this.radius, this.speed, new Vector3(this.Vx, this.Vy, this.Vz))
 
-      const satelliteFolder = satelliteFolderFunc(satellites)
+      //const satelliteFolder = satelliteFolderFunc(satellites)
 
-      satellitesFolders.push(satelliteFolder);
+      //satellitesFolders.push(satelliteFolder);
     },
   };
   //at pos (20 million, 20 million, 20 million) the height of satellite will be 28,270 km
