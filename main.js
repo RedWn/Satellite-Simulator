@@ -10,6 +10,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Object3D, Vector3 } from "three";
 import { cameraFunc, earthFunc, lights, misc, moonFunc, rendererFunc, sunFunc } from "./Environment";
 import { destroyFolder, guiFunc, satelliteFolderFunc, satellitesFolders, updatePrototype } from "./GUI";
+import { addArrows, drawTrail, drawVector } from "./ArrowsAndTrails";
 
 export const scene = new THREE.Scene();
 
@@ -128,15 +129,6 @@ function gravityForce(satellite) {
   gravity.divideScalar(satellite.mass);
 }
 
-function collisionWithEarth(satellite) {
-  if (satellite.height < 0) {
-    //delete collided satellite
-    let index = satellites.indexOf(satellite);
-    removeSatelliteFromScene(index)
-    destroyFolder(index)
-  }
-}
-
 const dragAcceleration = new Vector3();
 function dragForce(satellite) {
   const DForce = 0.5 * VOLUMEETRIC_DENSITY * Math.PI * satellite.radius * satellite.radius *
@@ -158,6 +150,15 @@ function scientificCalculations(satellite) {
 
   satellite.displacement.copy(satellite.velocityVector).multiplyScalar(deltaTime);
   satellite.object.position.add(satellite.displacement);
+}
+
+function collisionWithEarth(satellite) {
+  if (satellite.height < 0) {
+    //delete collided satellite
+    let index = satellites.indexOf(satellite);
+    removeSatelliteFromScene(index)
+    destroyFolder(index)
+  }
 }
 
 const distanceVector = new Vector3();
@@ -184,59 +185,6 @@ function perfectInelasticCollision(sat1) {
     }
   }
 }
-
-function addArrows(satellite) {
-  const arrowHelper = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0xff0000);
-  scene.add(arrowHelper);
-  satellite.arrows.push(arrowHelper);
-
-  const arrowHelper1 = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0x0000ff);
-  scene.add(arrowHelper1);
-  satellite.arrows.push(arrowHelper1);
-
-  const arrowHelper2 = new THREE.ArrowHelper(new Vector3(), satellite.object.position, 1, 0x00ff00);
-  scene.add(arrowHelper2);
-  satellite.arrows.push(arrowHelper2);
-}
-
-function drawTrail(satellite) {
-  const origin = satellite.object.position;
-  const length = 1e6;
-  const hex = 0xffff00;
-
-  const arrowHelper = new THREE.ArrowHelper(new Vector3(), origin, length, hex);
-  scene.add(arrowHelper);
-  const temp = new Vector3().copy(satellite.velocityVector);
-  temp.normalize();
-  const newSourcePos = satellite.object.position;
-  var newTargetPos = temp;
-  arrowHelper.position.set(newSourcePos.x, newSourcePos.y, newSourcePos.z);
-  const direction = new THREE.Vector3().copy(newTargetPos);
-  arrowHelper.setDirection(direction.normalize());
-  arrowHelper.setLength(temp.length() * 1e5);
-
-  setTimeout(removeTrail, 6e4, arrowHelper);
-}
-
-function removeTrail(arrowHelper) {
-  scene.remove(arrowHelper);
-}
-
-function drawVector(satellite, V, i) {
-  const temp = new Vector3().copy(V);
-  temp.normalize();
-  const newSourcePos = satellite.object.position;
-  var newTargetPos = temp;
-  satellite.arrows[i].position.set(
-    newSourcePos.x,
-    newSourcePos.y,
-    newSourcePos.z
-  );
-  const direction = new THREE.Vector3().copy(newTargetPos);
-  satellite.arrows[i].setDirection(direction.normalize());
-  satellite.arrows[i].setLength(V.length() * 1e6);
-}
-
 
 export function removeSatelliteFromScene(index) {
   let satToBeDeleted = satellites.at(index);
