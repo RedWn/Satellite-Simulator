@@ -27,7 +27,13 @@ the real deal, houses all of the physical calculations needed for the simulation
 
 huge thanks to @[IyadAlanssary](https://github.com/IyadAlanssary) for his efforts in making the code clean
 
-## How to run the project (for now)
+## How to run the project
+visit https://redwn.github.io/Physics-Project/ to try.
+ 
+(Huge thx to @[Rami-Sabbagh](https://github.com/Rami-Sabbagh) for helping in this).
+
+OR
+
 make sure you have node.js installed and install three.js with
 ```
 npm install three
