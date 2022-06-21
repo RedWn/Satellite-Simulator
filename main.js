@@ -113,6 +113,7 @@ function animate() {
   controls.update();
   renderer.render(scene, camera);
   updatePrototype();
+  controlSatellite()
 }
 animate();
 
@@ -193,4 +194,37 @@ export function removeSatelliteFromScene(index) {
   });
   satellites.splice(index, 1)
   scene.remove(satToBeDeleted.object);
+}
+
+function controlSatellite() {
+  if (satellites.length > 0) {
+
+    document.addEventListener("keydown", onDocumentKeyDown, false);
+    function onDocumentKeyDown(event) {
+      var keyCode = event.which;
+      if (keyCode == 87) {//W
+        satellites[0].velocityVector.x += 20
+      }
+      if (keyCode == 81) {//Q
+        satellites[0].velocityVector.x -= 20
+      }
+      if (keyCode == 83) {//S
+        satellites[0].velocityVector.y += 20
+      }
+      if (keyCode == 65) {//A
+        satellites[0].velocityVector.y -= 20
+      }
+      if (keyCode == 88) {//X
+        satellites[0].velocityVector.z += 20
+      }
+      if (keyCode == 90) {//Z
+        satellites[0].velocityVector.z -= 20
+      }
+
+    };
+    if(satellites[0].height > 16000000){
+        removeSatelliteFromScene(0)
+        destroyFolder(0);
+    }
+  }
 }
