@@ -43,7 +43,7 @@ export var satellites = new Array();
 
 export let time = { timeScale: 1 };
 
-guiFunc(satellites);
+guiFunc();
 
 export function addSatellite(pos, mass, radius, initialSpeed, initialSpeedVector) {
   let satellite = {
@@ -131,11 +131,11 @@ function gravityForce(satellite) {
 
 const dragAcceleration = new Vector3();
 function dragForce(satellite) {
-  const DForce = 0.5 * VOLUMEETRIC_DENSITY * Math.PI * satellite.radius * satellite.radius *
+  const dForce = 0.5 * VOLUMEETRIC_DENSITY * Math.PI * satellite.radius * satellite.radius *
     satellite.velocityVector.lengthSq() * DRAG_COEFFICIENT;
   const temp = new Vector3();
   temp.copy(satellite.velocityVector).normalize().multiplyScalar(-1);
-  dragAcceleration.copy(temp).multiplyScalar(DForce);
+  dragAcceleration.copy(temp).multiplyScalar(dForce);
   dragAcceleration.divideScalar(satellite.mass);
 }
 
