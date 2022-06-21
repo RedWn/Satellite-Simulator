@@ -3,8 +3,8 @@ Physics project done by two students in almost 4 days for a Damascus University 
 
 
 ## Description 
-A physical simualation for the movement of satallites in orbit in relation to earth done for a university project.
-using JavaScript and three.js for the graphical output and physical calculations and lil.gue for the control interface.
+A physical simulation for the movement of satellites' orbits in relation to Earth done for a university project.
+using JavaScript and three.js for the graphical output and physical calculations and lil-gui for the control interface.
 
 
 ## Code Classes
@@ -23,7 +23,7 @@ includes all functions that relate to rendering and output of the environment wi
 pretty much self explanatory.
 
 ### main.js
-the main deal, houses all of the physical calculations neede for the simulation.
+the real deal, houses all of the physical calculations needed for the simulation.
 
 huge thanks to @[IyadAlanssary](https://github.com/IyadAlanssary) for his efforts in making the code clean
 
@@ -37,10 +37,9 @@ and run the project to local host with
 npm run dev
 ```
 
-the main controls of the sim are all through the provided GUI.
+the main controls of the simulation are all through the provided GUI.
 
-
-we will try and deliver a web hosted instant-try version asap
+we will deliver a web hosted instant-try version asap!
 
 ## This project was made with the efforts of my partner @[IyadAlanssary](https://github.com/IyadAlanssary) and me @[RedWn](https://github.com/RedWn)
 thx to @[tarook0](https://github.com/tarook0), @[Hamsho](https://github.com/Hamsho) and @[Maias-Alakramy](https://github.com/Maias-Alakramy) for additional help
